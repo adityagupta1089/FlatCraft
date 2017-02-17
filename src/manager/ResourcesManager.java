@@ -39,7 +39,7 @@ public class ResourcesManager {
 	// --------------------------------------------------------------//
 	// Variables for Main Menu Scene
 	// --------------------------------------------------------------//
-	public ITextureRegion menu_background_region;
+	public static ITextureRegion menu_background_region;
 	public ITextureRegion play_region;
 	public ITextureRegion options_region;
 
