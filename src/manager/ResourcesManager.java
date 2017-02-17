@@ -40,10 +40,10 @@ public class ResourcesManager {
 	// Variables for Main Menu Scene
 	// --------------------------------------------------------------//
 	public static ITextureRegion menu_background_region;
-	public ITextureRegion play_region;
-	public ITextureRegion options_region;
+	public static ITextureRegion play_region;
+	public static ITextureRegion options_region;
 
-	private BuildableBitmapTextureAtlas menuTextureAtlas;
+	private static BuildableBitmapTextureAtlas menuTextureAtlas;
 
 	// --------------------------------------------------------------//
 	// Class Logic
@@ -56,7 +56,7 @@ public class ResourcesManager {
 		engine = pEngine;
 	}
 
-	public void loadMenuResources() {
+	public static void loadMenuResources() {
 		loadMenuGraphics();
 		loadMenuAudio();
 	}
@@ -67,7 +67,7 @@ public class ResourcesManager {
 		loadGameAudio();
 	}
 
-	private void loadMenuGraphics() {
+	private static void loadMenuGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
 		menuTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024,
 				TextureOptions.BILINEAR);
@@ -79,15 +79,15 @@ public class ResourcesManager {
 				"options.png");
 
 		try {
-			this.menuTextureAtlas.build(
+			menuTextureAtlas.build(
 					new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
-			this.menuTextureAtlas.load();
+			menuTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
 	}
 
-	private void loadMenuAudio() {
+	private static void loadMenuAudio() {
 
 	}
 
