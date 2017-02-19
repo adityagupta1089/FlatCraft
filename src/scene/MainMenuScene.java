@@ -17,24 +17,40 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private MenuScene menuChildScene;
 	private final int MENU_PLAY = 0;
 	private final int MENU_OPTIONS = 1;
+	private final int MENU_CREDITS = 2;
+	private final int MENU_HELP = 3;
+	private final int MENU_EXIT = 4;
+	private static final int SPACING = 125;
 
 	private void createMenuChildScene() {
 		menuChildScene = new MenuScene(camera);
-		menuChildScene.setPosition(0, 0);
+		menuChildScene.setPosition(0, -110);
 
 		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(
 				new SpriteMenuItem(MENU_PLAY, ResourcesManager.play_region, vertexBufferObjectManager), 1.2f, 1);
 		final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(
 				new SpriteMenuItem(MENU_OPTIONS, ResourcesManager.options_region, vertexBufferObjectManager), 1.2f, 1);
+		final IMenuItem creditsMenuItem = new ScaleMenuItemDecorator(
+				new SpriteMenuItem(MENU_OPTIONS, ResourcesManager.credits_region, vertexBufferObjectManager), 1.2f, 1);
+		final IMenuItem helpMenuItem = new ScaleMenuItemDecorator(
+				new SpriteMenuItem(MENU_OPTIONS, ResourcesManager.help_region, vertexBufferObjectManager), 1.2f, 1);
+		final IMenuItem exitMenuItem = new ScaleMenuItemDecorator(
+				new SpriteMenuItem(MENU_OPTIONS, ResourcesManager.exit_region, vertexBufferObjectManager), 1.2f, 1);
 
 		menuChildScene.addMenuItem(playMenuItem);
 		menuChildScene.addMenuItem(optionsMenuItem);
+		menuChildScene.addMenuItem(creditsMenuItem);
+		menuChildScene.addMenuItem(helpMenuItem);
+		menuChildScene.addMenuItem(exitMenuItem);
 
 		menuChildScene.buildAnimations();
 		menuChildScene.setBackgroundEnabled(false);
 
-		playMenuItem.setPosition(playMenuItem.getX(), playMenuItem.getY() + 10);
-		optionsMenuItem.setPosition(optionsMenuItem.getX(), optionsMenuItem.getY() - 110);
+		playMenuItem.setPosition(playMenuItem.getX(), playMenuItem.getY() + SPACING);
+		optionsMenuItem.setPosition(optionsMenuItem.getX(), playMenuItem.getY() - SPACING);
+		creditsMenuItem.setPosition(optionsMenuItem.getX(), optionsMenuItem.getY() - SPACING);
+		helpMenuItem.setPosition(optionsMenuItem.getX(), creditsMenuItem.getY() - SPACING);
+		exitMenuItem.setPosition(optionsMenuItem.getX(), helpMenuItem.getY() - SPACING);
 
 		menuChildScene.setOnMenuItemClickListener(this);
 
@@ -70,6 +86,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		case MENU_PLAY:
 			return true;
 		case MENU_OPTIONS:
+			return true;
+		case MENU_CREDITS:
+			return true;
+		case MENU_HELP:
+			return true;
+		case MENU_EXIT:
+			System.exit(0);
 			return true;
 		default:
 			return false;

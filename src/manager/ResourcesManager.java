@@ -42,6 +42,9 @@ public class ResourcesManager {
 	public static ITextureRegion menu_background_region;
 	public static ITextureRegion play_region;
 	public static ITextureRegion options_region;
+	public static ITextureRegion credits_region;
+	public static ITextureRegion help_region;
+	public static ITextureRegion exit_region;
 
 	private static BuildableBitmapTextureAtlas menuTextureAtlas;
 
@@ -77,6 +80,12 @@ public class ResourcesManager {
 				"play.png");
 		options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
 				"options.png");
+		credits_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
+				"credits.png");
+		help_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
+				"help.png");
+		exit_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
+				"exit.png");
 
 		try {
 			menuTextureAtlas.build(
