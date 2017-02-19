@@ -51,6 +51,7 @@ public class GameScene extends BaseScene {
 
 	private void createWorld() {
 		World world = new CreativeWorld();
+		setChildScene(world);
 	}
 
 }
