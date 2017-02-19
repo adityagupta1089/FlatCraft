@@ -13,10 +13,6 @@ import base.BaseScene;
 import manager.ResourcesManager;
 
 public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener {
-	@Override
-	public void onBackKeyPressed() {
-		System.exit(0);
-	}
 
 	private MenuScene menuChildScene;
 	private final int MENU_PLAY = 0;
@@ -24,7 +20,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	private void createMenuChildScene() {
 		menuChildScene = new MenuScene(camera);
-		menuChildScene.setPosition(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
+		menuChildScene.setPosition(0, 0);
 
 		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(
 				new SpriteMenuItem(MENU_PLAY, ResourcesManager.play_region, vertexBufferObjectManager), 1.2f, 1);
@@ -78,5 +74,10 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		default:
 			return false;
 		}
+	}
+
+	@Override
+	public void onBackKeyPressed() {
+		System.exit(0);
 	}
 }

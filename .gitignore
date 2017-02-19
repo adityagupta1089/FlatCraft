@@ -60,3 +60,6 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+# PSD Files
+**/*.psd

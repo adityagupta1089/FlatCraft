@@ -1,8 +1,10 @@
 package scene;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.util.GLState;
+import org.andengine.util.adt.color.Color;
 
 import base.BaseScene;
 import manager.ResourcesManager;
@@ -13,6 +15,7 @@ public class SplashScene extends BaseScene {
 
 	@Override
 	public void createScene() {
+		setBackground(new Background(Color.WHITE));
 		splash = new Sprite(0, 0, ResourcesManager.splash_region, vertexBufferObjectManager) {
 			@Override
 			protected void preDraw(GLState pGLState, Camera pCamera) {
@@ -28,7 +31,6 @@ public class SplashScene extends BaseScene {
 
 	@Override
 	public void onBackKeyPressed() {
-		// TODO Auto-generated method stub
 
 	}
 
