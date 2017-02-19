@@ -22,6 +22,7 @@ import org.andengine.util.debug.Debug;
 
 import android.graphics.Color;
 import main.GameActivity;
+import object.tile.TilesLoader;
 
 public class ResourcesManager {
 	// --------------------------------------------------------------//
@@ -59,7 +60,8 @@ public class ResourcesManager {
 	// --------------------------------------------------------------//
 	// Variables for Game Scene
 	// --------------------------------------------------------------//
-	public static Map<String, ITextureRegion> tiles;
+	public static Map<String, ITextureRegion> tileRegions;
+	public static Map<String, Boolean> tilePassability;
 
 	private static BuildableBitmapTextureAtlas gameTextureAtlas;
 
@@ -85,6 +87,7 @@ public class ResourcesManager {
 
 	public static void loadGameResources() {
 		loadGameGraphics();
+		loadTiles();
 		loadGameFonts();
 		loadGameAudio();
 	}
@@ -133,7 +136,7 @@ public class ResourcesManager {
 	// Game Scene
 	// --------------------------------------------------------------//
 	private static void loadGameGraphics() {
-		tiles = new HashMap<String, ITextureRegion>();
+		tileRegions = new HashMap<String, ITextureRegion>();
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048,
 				TextureOptions.BILINEAR);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/tiles/");
@@ -142,7 +145,7 @@ public class ResourcesManager {
 																.list("gfx/game/tiles")) {
 				ITextureRegion tempRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
 						gameActivity, tileName);
-				tiles.put(tileName.split("\\.")[0].toUpperCase(Locale.ENGLISH), tempRegion);
+				tileRegions.put(tileName.split("\\.")[0].toUpperCase(Locale.ENGLISH), tempRegion);
 			}
 
 		} catch (Exception e) {
@@ -163,6 +166,10 @@ public class ResourcesManager {
 
 	private static void loadGameAudio() {
 
+	}
+
+	private static void loadTiles() {
+		new TilesLoader().loadTiles();
 	}
 
 	public static void unloadGameTextures() {
