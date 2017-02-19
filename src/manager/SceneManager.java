@@ -53,7 +53,7 @@ public class SceneManager {
 	// --------------------------------------------------------------//
 	// Getters
 	// --------------------------------------------------------------//
-	public static BaseScene getCurrentscene() {
+	public static BaseScene getCurrentScene() {
 		return currentScene;
 	}
 

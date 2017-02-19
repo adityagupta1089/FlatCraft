@@ -11,6 +11,7 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.BaseGameActivity;
 
+import android.view.KeyEvent;
 import manager.ResourcesManager;
 import manager.SceneManager;
 
@@ -51,6 +52,21 @@ public class GameActivity extends BaseGameActivity {
 			}
 		}));
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		System.exit(0);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			SceneManager.getCurrentScene()
+						.onBackKeyPressed();
+		}
+		return false;
 	}
 
 }

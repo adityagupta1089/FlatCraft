@@ -2,6 +2,9 @@ package manager;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -13,6 +16,7 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
+import android.graphics.Color;
 import main.GameActivity;
 
 public class ResourcesManager {
@@ -40,11 +44,9 @@ public class ResourcesManager {
 	// Variables for Main Menu Scene
 	// --------------------------------------------------------------//
 	public static ITextureRegion menu_background_region;
-	public static ITextureRegion play_region;
-	public static ITextureRegion options_region;
-	public static ITextureRegion credits_region;
 	public static ITextureRegion help_region;
-	public static ITextureRegion exit_region;
+
+	public static Font caviarDreams;
 
 	private static BuildableBitmapTextureAtlas menuTextureAtlas;
 
@@ -59,8 +61,12 @@ public class ResourcesManager {
 		engine = pEngine;
 	}
 
+	// --------------------------------------------------------------//
+	// Load Functions
+	// --------------------------------------------------------------//
 	public static void loadMenuResources() {
 		loadMenuGraphics();
+		loadMenuFonts();
 		loadMenuAudio();
 	}
 
@@ -70,23 +76,17 @@ public class ResourcesManager {
 		loadGameAudio();
 	}
 
+	// --------------------------------------------------------------//
+	// Menu Scene
+	// --------------------------------------------------------------//
 	private static void loadMenuGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
 		menuTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048,
 				TextureOptions.BILINEAR);
 		menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
 				"menu_background.png");
-		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
-				"play.png");
-		options_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
-				"options.png");
-		credits_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
-				"credits.png");
-		help_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
-				"help.png");
-		exit_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
-				"exit.png");
-
+		//help_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
+		//		"help.png");
 		try {
 			menuTextureAtlas.build(
 					new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -100,6 +100,19 @@ public class ResourcesManager {
 
 	}
 
+	private static void loadMenuFonts() {
+		FontFactory.setAssetBasePath("font/");
+		final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+
+		caviarDreams = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(),
+				"CaviarDreams.ttf", 100, true, Color.BLACK);
+		caviarDreams.load();
+	}
+
+	// --------------------------------------------------------------//
+	// Game Scene
+	// --------------------------------------------------------------//
 	private void loadGameGraphics() {
 
 	}
@@ -112,6 +125,9 @@ public class ResourcesManager {
 
 	}
 
+	// --------------------------------------------------------------//
+	// Load Splash
+	// --------------------------------------------------------------//
 	public static void loadSplashScreen() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		splashTextureAtlas = new BitmapTextureAtlas(gameActivity.getTextureManager(), 256, 256,
