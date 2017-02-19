@@ -11,14 +11,9 @@ public class Tile extends Sprite {
 
 	private boolean passable;
 
-
-	public static enum TileType {
-		GRASS, WOOD
-	}
-
-	public Tile(float pX, float pY, TileType pTileType) {
+	public Tile(float pX, float pY, int pTileType) {
 		//TODO data will be read from XML like tile type, tile passability, etc.
-		super(pX, pY, TILE_WIDTH, TILE_HEIGHT, ResourcesManager.grass_region/*temp*/,
+		super(pX, pY, TILE_WIDTH, TILE_HEIGHT, ResourcesManager.tiles.get("BRICK_RED"),
 				ResourcesManager.vertexBufferObjectManager);
 	}
 

@@ -1,5 +1,9 @@
 package manager;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.opengl.font.Font;
@@ -17,9 +21,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import android.graphics.Color;
-import android.util.Log;
 import main.GameActivity;
-import object.Tile;
 
 public class ResourcesManager {
 	// --------------------------------------------------------------//
@@ -53,6 +55,13 @@ public class ResourcesManager {
 	public static Font caviarDreams;
 
 	private static BuildableBitmapTextureAtlas menuTextureAtlas;
+
+	// --------------------------------------------------------------//
+	// Variables for Game Scene
+	// --------------------------------------------------------------//
+	public static Map<String, ITextureRegion> tiles;
+
+	private static BuildableBitmapTextureAtlas gameTextureAtlas;
 
 	// --------------------------------------------------------------//
 	// Class Logic
@@ -89,8 +98,6 @@ public class ResourcesManager {
 				TextureOptions.BILINEAR);
 		menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
 				"menu_background.png");
-		//help_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
-		//		"help.png");
 		try {
 			menuTextureAtlas.build(
 					new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -126,14 +133,27 @@ public class ResourcesManager {
 	// Game Scene
 	// --------------------------------------------------------------//
 	private static void loadGameGraphics() {
+		tiles = new HashMap<String, ITextureRegion>();
+		gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048,
+				TextureOptions.BILINEAR);
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/tiles/");
 		try {
 			for (String tileName : ResourcesManager.gameActivity.getAssets()
 																.list("gfx/game/tiles")) {
-				Tile.TileType.
+				ITextureRegion tempRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
+						gameActivity, tileName);
+				tiles.put(tileName.split("\\.")[0].toUpperCase(Locale.ENGLISH), tempRegion);
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		try {
+			gameTextureAtlas.build(
+					new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			gameTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
 		}
 	}
 
