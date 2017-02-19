@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tile
-    name="BRICK_RED"
-    passable="false" />
-<tile
-    name="DIRT_GRASS"
-    passable="false" />
-<tile
-    name="DIRT"
-    passable="false" />
-<tile
-    name="GLASS"
-    passable="false" />
-<tile
-    name="LEAVES"
-    passable="true" />
-<tile
-    name="STONE"
-    passable="false" />
-<tile
-    name="TRUNK_BOTTOM"
-    passable="true" />
-<tile
-    name="TRUNK_MID"
-    passable="true" />
+<tiles>
+
+    <tile
+        name="BRICK_RED"
+        passable="false" />
+
+    <tile
+        name="DIRT_GRASS"
+        passable="false" />
+
+    <tile
+        name="DIRT"
+        passable="false" />
+
+    <tile
+        name="GLASS"
+        passable="false" />
+
+    <tile
+        name="LEAVES"
+        passable="true" />
+
+    <tile
+        name="STONE"
+        passable="false" />
+
+    <tile
+        name="TRUNK_BOTTOM"
+        passable="true" />
+
+    <tile
+        name="TRUNK_MID"
+        passable="true" />
+
+</tiles>

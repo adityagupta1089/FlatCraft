@@ -17,6 +17,7 @@ import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSourc
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
@@ -62,6 +63,13 @@ public class ResourcesManager {
 	// --------------------------------------------------------------//
 	public static Map<String, ITextureRegion> tileRegions;
 	public static Map<String, Boolean> tilePassability;
+
+	private static BuildableBitmapTextureAtlas gameTilesTextureAtlas;
+
+	public static TextureRegion skyBoxBottomRegion;
+	public static TextureRegion skyBoxSideHillsRegion;
+	public static TextureRegion skyBoxTopRegion;
+	public static TextureRegion sunRegion;
 
 	private static BuildableBitmapTextureAtlas gameTextureAtlas;
 
@@ -136,21 +144,48 @@ public class ResourcesManager {
 	// Game Scene
 	// --------------------------------------------------------------//
 	private static void loadGameGraphics() {
+		loadTileGraphics();
+		loadBackgroundGraphics();
+
+	}
+
+	private static void loadTileGraphics() {
 		tileRegions = new HashMap<String, ITextureRegion>();
-		gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048,
+		gameTilesTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024,
 				TextureOptions.BILINEAR);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/tiles/");
 		try {
 			for (String tileName : ResourcesManager.gameActivity.getAssets()
 																.list("gfx/game/tiles")) {
-				ITextureRegion tempRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,
-						gameActivity, tileName);
+				if (!tileName.contains(".png"))
+					continue;
+				ITextureRegion tempRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+						gameTilesTextureAtlas, gameActivity, tileName);
 				tileRegions.put(tileName.split("\\.")[0].toUpperCase(Locale.ENGLISH), tempRegion);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+			gameTilesTextureAtlas.build(
+					new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+			gameTilesTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+	}
+
+	private static void loadBackgroundGraphics() {
+		gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048,
+				TextureOptions.BILINEAR);
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/background/");
+		skyBoxBottomRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity,
+				"skybox_bottom.png");
+		skyBoxSideHillsRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity,
+				"skybox_sideHills.png");
+		skyBoxTopRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity,
+				"skybox_top.png");
+		sunRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "sun.png");
 		try {
 			gameTextureAtlas.build(
 					new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
