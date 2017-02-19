@@ -1,18 +1,29 @@
-package object;
 
 import org.andengine.entity.sprite.Sprite;
 
+import manager.ResourcesManager;
 
+public class Tile extends Sprite {
 
-/* EDITED BY SACHIN BIJALWAN
- * CSP 203- GROUP NO - 2
- */
-public class tiles extends Sprite {
- 
-	public boolean passable;     //specifies whether tile is passable or not
+	private static int TILE_WIDTH = 64;
+	private static int TILE_HEIGHT = 64;
+
+	private boolean passable;
+
+	public static enum TileType {
+		GRASS, WOOD
+	}
+
+	public Tile(float pX, float pY, TileType pTileType) {
+		//TODO data will be read from XML like tile type, tile passability, etc.
+		super(pX, pY, TILE_WIDTH, TILE_HEIGHT, ResourcesManager.grass_region/*temp*/,
+				ResourcesManager.vertexBufferObjectManager);
+	}
+
+	/*public boolean passable;     //specifies whether tile is passable or not
 	
 	Sprite tile;  // sprite for tiles
-
+	
 	///////////////////////////////////////////////////////////////////
 	public enum categories{
 		;//Initialize the variable in the format var(number)
@@ -44,10 +55,8 @@ public class tiles extends Sprite {
 		}
 	}
 	
-  public tiles(int x,int y,ITextureRegion textureregion,int categorynumber){     //constructor
+	public tiles(int x,int y,ITextureRegion textureregion,int categorynumber){     //constructor
 	   tile=new Sprite(x,y,textureregion,mEngine.getVertexBufferObjectManager());      // Need verification
 	   /*can't figure out the way to initialize the enum using category number do it here*/
-	   
-  }
-  
+
 }

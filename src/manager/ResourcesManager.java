@@ -34,6 +34,8 @@ public class ResourcesManager {
 	public static Engine engine;
 	public static VertexBufferObjectManager vertexBufferObjectManager;
 
+	public static ITextureRegion grass_region;
+
 	// --------------------------------------------------------------//
 	// Variables for Splash Scene
 	// --------------------------------------------------------------//
