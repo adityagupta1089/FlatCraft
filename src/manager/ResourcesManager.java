@@ -19,6 +19,7 @@ import org.andengine.util.debug.Debug;
 import android.graphics.Color;
 import android.util.Log;
 import main.GameActivity;
+import object.Tile;
 
 public class ResourcesManager {
 	// --------------------------------------------------------------//
@@ -128,7 +129,7 @@ public class ResourcesManager {
 		try {
 			for (String tileName : ResourcesManager.gameActivity.getAssets()
 																.list("gfx/game/tiles")) {
-				Log.d("Tile", tileName);
+				Tile.TileType.
 			}
 
 		} catch (Exception e) {
