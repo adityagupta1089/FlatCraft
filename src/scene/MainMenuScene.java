@@ -14,13 +14,12 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import base.BaseScene;
 import manager.ResourcesManager;
+import manager.SceneManager;
 
 public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener {
 
 	private MenuScene menuChildScene;
-	private MenuScene playChildScene;
 	private MenuScene creditsChildScene;
-	private MenuScene optionsChildScene;
 	private MenuScene helpChildScene;
 
 	private final int MENU_PLAY = 0;
@@ -148,11 +147,6 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	}
 
-	private void createPlayMenuScene() {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public void createScene() {
 		createBackground();
@@ -180,7 +174,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			float pMenuItemLocalY) {
 		switch (pMenuItem.getID()) {
 		case MENU_PLAY:
-			createPlayMenuScene();
+			SceneManager.loadGameScene(engine);
 			return true;
 		case MENU_OPTIONS:
 			createOptionsMenuScene();

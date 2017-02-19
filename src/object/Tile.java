@@ -1,3 +1,4 @@
+package object;
 
 import org.andengine.entity.sprite.Sprite;
 
@@ -9,6 +10,7 @@ public class Tile extends Sprite {
 	private static int TILE_HEIGHT = 64;
 
 	private boolean passable;
+
 
 	public static enum TileType {
 		GRASS, WOOD

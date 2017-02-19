@@ -1,5 +1,5 @@
 package world;
 
-public class SurvivalWorld {
+public class SurvivalWorld extends World {
 
 }

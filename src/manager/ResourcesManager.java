@@ -17,6 +17,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import android.graphics.Color;
+import android.util.Log;
 import main.GameActivity;
 
 public class ResourcesManager {
@@ -72,7 +73,7 @@ public class ResourcesManager {
 		loadMenuAudio();
 	}
 
-	public void loadGameResources() {
+	public static void loadGameResources() {
 		loadGameGraphics();
 		loadGameFonts();
 		loadGameAudio();
@@ -112,18 +113,39 @@ public class ResourcesManager {
 		caviarDreams.load();
 	}
 
+	public static void unloadMenuTextures() {
+		menuTextureAtlas.unload();
+	}
+
+	public static void loadMenuTextures() {
+		menuTextureAtlas.load();
+	}
+
 	// --------------------------------------------------------------//
 	// Game Scene
 	// --------------------------------------------------------------//
-	private void loadGameGraphics() {
+	private static void loadGameGraphics() {
+		try {
+			for (String tileName : ResourcesManager.gameActivity.getAssets()
+																.list("gfx/game/tiles")) {
+				Log.d("Tile", tileName);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void loadGameFonts() {
 
 	}
 
-	private void loadGameFonts() {
+	private static void loadGameAudio() {
 
 	}
 
-	private void loadGameAudio() {
+	public static void unloadGameTextures() {
+		// TODO Auto-generated method stub
 
 	}
 
