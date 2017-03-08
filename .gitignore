@@ -46,7 +46,7 @@ tmp/**/*
 *~.nib
 local.properties
 .classpath
-.settings/
+.settings/**
 .loadpath
 
 # External tool builders
@@ -63,6 +63,3 @@ local.properties
 
 # PSD Files
 **/*.psd
-
-# eclipse settings
-.settings/**
