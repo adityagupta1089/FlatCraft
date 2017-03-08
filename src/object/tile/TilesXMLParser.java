@@ -18,10 +18,7 @@ public class TilesXMLParser extends DefaultHandler implements TilesXMLConstants 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		if (localName.equals(TAG_TILE)) {
-			ResourcesManager.tilePassability.put(SAXUtils.getAttributeOrThrow(attributes, TAG_TILE_ATTRIBUTE_NAME),
-					SAXUtils.getBooleanAttributeOrThrow(attributes, TAG_TILE_ATTRIBUTE_PASSABLE));
-		} else if (!localName.equals(TAG_TILES)) {
-			throw new SAXException("Unexpected start tag: '" + localName + "'.");
-		}
+			ResourcesManager.tilePassability.put(SAXUtils.getAttributeOrThrow(attributes, TAG_TILE_ATTRIBUTE_NAME), SAXUtils.getBooleanAttributeOrThrow(attributes, TAG_TILE_ATTRIBUTE_PASSABLE));
+		} else if (!localName.equals(TAG_TILES)) { throw new SAXException("Unexpected start tag: '" + localName + "'."); }
 	}
 }

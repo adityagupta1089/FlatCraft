@@ -1,6 +1,8 @@
 package scene;
 
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
+import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.util.adt.color.Color;
 
@@ -11,18 +13,19 @@ import world.CreativeWorld;
 import world.World;
 
 public class GameScene extends BaseScene {
-	//--------------------------------------------------------------//
+	// --------------------------------------------------------------//
 	// Variables
 	// --------------------------------------------------------------//
 	private HUD gameHUD;
 
-	//--------------------------------------------------------------//
+	// --------------------------------------------------------------//
 	// Class Logic
 	// --------------------------------------------------------------//
 	@Override
 	public void createScene() {
 		createBackground();
 		createWorld();
+		createAnalogOnScreenController();
 		createHUD();
 	}
 
@@ -37,7 +40,7 @@ public class GameScene extends BaseScene {
 		camera.setCenter(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
 	}
 
-	//--------------------------------------------------------------//
+	// --------------------------------------------------------------//
 	// Helper Functions
 	// --------------------------------------------------------------//
 	private void createBackground() {
@@ -52,6 +55,10 @@ public class GameScene extends BaseScene {
 	private void createWorld() {
 		World world = new CreativeWorld();
 		setChildScene(world);
+	}
+
+	private void createAnalogOnScreenController() {
+		//TODO
 	}
 
 }

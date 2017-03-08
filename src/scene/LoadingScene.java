@@ -11,8 +11,7 @@ public class LoadingScene extends BaseScene {
 	@Override
 	public void createScene() {
 		setBackground(new Background(Color.WHITE));
-		attachChild(new Text(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2, ResourcesManager.caviarDreams,
-				"Loading...", vertexBufferObjectManager));
+		attachChild(new Text(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2, ResourcesManager.caviarDreams, "Loading...", vertexBufferObjectManager));
 	}
 
 	@Override

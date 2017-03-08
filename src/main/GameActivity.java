@@ -22,8 +22,7 @@ public class GameActivity extends BaseGameActivity {
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		camera = new Camera(0, 0, ResourcesManager.WIDTH, ResourcesManager.HEIGHT);
-		EngineOptions engineoptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
-				new RatioResolutionPolicy(ResourcesManager.WIDTH, ResourcesManager.HEIGHT), this.camera);
+		EngineOptions engineoptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(ResourcesManager.WIDTH, ResourcesManager.HEIGHT), this.camera);
 		return engineoptions;
 	}
 
@@ -63,8 +62,7 @@ public class GameActivity extends BaseGameActivity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			SceneManager.getCurrentScene()
-						.onBackKeyPressed();
+			SceneManager.getCurrentScene().onBackKeyPressed();
 		}
 		return false;
 	}

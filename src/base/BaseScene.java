@@ -9,7 +9,7 @@ import main.GameActivity;
 import manager.ResourcesManager;
 
 public abstract class BaseScene extends Scene {
-	//--------------------------------------------------------------//
+	// --------------------------------------------------------------//
 	// Variables
 	// --------------------------------------------------------------//
 	protected VertexBufferObjectManager vertexBufferObjectManager;
@@ -17,7 +17,7 @@ public abstract class BaseScene extends Scene {
 	GameActivity gameActivity;
 	protected Engine engine;
 
-	//--------------------------------------------------------------//
+	// --------------------------------------------------------------//
 	// Constructor
 	// --------------------------------------------------------------//
 
@@ -29,7 +29,7 @@ public abstract class BaseScene extends Scene {
 		createScene();
 	}
 
-	//--------------------------------------------------------------//
+	// --------------------------------------------------------------//
 	// Abstraction
 	// --------------------------------------------------------------//
 

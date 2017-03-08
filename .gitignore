@@ -63,3 +63,6 @@ local.properties
 
 # PSD Files
 **/*.psd
+
+# eclipse settings
+.settings/**

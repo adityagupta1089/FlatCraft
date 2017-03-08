@@ -13,7 +13,7 @@ import manager.ResourcesManager;
 
 public class TilesLoader {
 
-	public void loadTiles() {
+	public static void loadTiles() {
 		try {
 			final SAXParserFactory mSAXParserFactory = SAXParserFactory.newInstance();
 			final SAXParser mSAXParser = mSAXParserFactory.newSAXParser();
@@ -23,8 +23,7 @@ public class TilesLoader {
 
 			xmlReader.setContentHandler(pXMLParser);
 
-			InputStream inputStream = ResourcesManager.gameActivity	.getAssets()
-																	.open("gfx/game/tiles/tiles.xml");
+			InputStream inputStream = ResourcesManager.gameActivity.getAssets().open("gfx/game/tiles/tiles.xml");
 			xmlReader.parse(new InputSource(new BufferedInputStream(inputStream)));
 		} catch (Exception e) {
 			e.printStackTrace();

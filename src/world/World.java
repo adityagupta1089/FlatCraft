@@ -33,19 +33,17 @@ public class World extends Scene {
 		int i = 0;
 		for (; i < 2; i++) {
 			for (int j = 0; j < GRID_WIDTH; j++) {
-				grid[i][j] = new Tile(j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
-						"DIRT");
+				grid[i][j] = new Tile(j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, "DIRT");
 				attachChild(grid[i][j]);
 			}
 		}
 		for (int j = 0; j < GRID_WIDTH; j++) {
-			grid[i][j] = new Tile(j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
-					"DIRT_GRASS");
+			grid[i][j] = new Tile(j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, "DIRT_GRASS");
 			attachChild(grid[i][j]);
 		}
 
-		//TODO player = new Player(0, 0, 0, 0, null, null);
-		//attachChild(player);
+		player = new Player(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
+		this.attachChild(player);
 	}
 
 	private void createBackground() {
@@ -60,9 +58,7 @@ public class World extends Scene {
 				} else {
 					temp = ResourcesManager.skyBoxSideHillsRegion;
 				}
-				attachChild(new Sprite(j * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2,
-						i * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, BACKGROUND_TILE_EDGE, BACKGROUND_TILE_EDGE,
-						temp, ResourcesManager.vertexBufferObjectManager));
+				attachChild(new Sprite(j * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, i * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, BACKGROUND_TILE_EDGE, BACKGROUND_TILE_EDGE, temp, ResourcesManager.vertexBufferObjectManager));
 			}
 		}
 	}
