@@ -46,7 +46,9 @@ public class GameScene extends BaseScene {
 	@Override
 	public void disposeScene() {
 		camera.setHUD(null);
+		camera.setChaseEntity(null);
 		camera.setCenter(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
+		//TODO ?
 	}
 
 	// --------------------------------------------------------------//
@@ -62,7 +64,7 @@ public class GameScene extends BaseScene {
 	}
 
 	private void createWorld() {
-		world = new CreativeWorld();
+		world = new CreativeWorld(camera);
 		attachChild(world);
 	}
 
