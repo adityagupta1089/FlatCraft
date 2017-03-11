@@ -29,14 +29,14 @@ public class Player extends Sprite {
 	}
 
 	public void setVelocityDirection(float f, float g) {
-		float vx = playerBody.getLinearVelocity().x, vy = playerBody.getLinearVelocity().y;
+		/*float vx = playerBody.getLinearVelocity().x, vy = playerBody.getLinearVelocity().y;
 		if (Math.abs(f) > MOVEMENT_THRESHOLD) {
 			vx = Math.signum(f) * VELOCITY_X;
 		}
 		if (Math.abs(vy / VELOCITY_Y) < STOP_EPSILON && Math.abs(g) > MOVEMENT_THRESHOLD) {
 			vy = Math.signum(g) * VELOCITY_Y;
-		}
-		playerBody.setLinearVelocity(vx, vy);
+		}*/
+		playerBody.setLinearVelocity(15*f, 15*g);
 	}
 
 	public void setLinearDamping(float f) {

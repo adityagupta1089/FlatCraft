@@ -92,7 +92,7 @@ public class GameScene extends BaseScene {
 		controlBase.setOffsetCenter(0, 0);
 		controlBase.setScale(3f);
 
-		analogOnScreenControl.getControlKnob().setAlpha(0f);
+		analogOnScreenControl.getControlKnob().setAlpha(0.1f);
 
 		setChildScene(analogOnScreenControl);
 	}
