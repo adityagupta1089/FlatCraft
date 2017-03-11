@@ -21,8 +21,8 @@ public class CreativeWorld extends World {
 
 	private static final float PLAYER_DAMPING = 1.5f;
 
-	private static final int GRID_WIDTH = 1000;
-	private static final int GRID_HEIGHT = 1000;
+	private static final int GRID_WIDTH = 100;
+	private static final int GRID_HEIGHT = 100;
 
 	private static final int BACKGROUND_TILE_EDGE = 256;
 	private static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE
@@ -32,7 +32,7 @@ public class CreativeWorld extends World {
 
 	public CreativeWorld(Camera camera) {
 		super(camera);
-		player.setLinearDamping(PLAYER_DAMPING);		
+		player.setLinearDamping(PLAYER_DAMPING);
 	}
 
 	@Override
@@ -86,8 +86,9 @@ public class CreativeWorld extends World {
 
 	@Override
 	public void createPlayer(Camera camera) {
-		player = new CreativePlayer(GRID_WIDTH / 2 * Tile.TILE_EDGE,
-				GRID_HEIGHT / 2 * Tile.TILE_EDGE, physicsWorld);
+		player = new CreativePlayer(GRID_WIDTH / 2 * Tile.TILE_EDGE, 3 * Tile.TILE_EDGE,
+				physicsWorld);
+		camera.setCenter(player.getX(), player.getY());
 		camera.setChaseEntity(player);
 		this.attachChild(player);
 	}
