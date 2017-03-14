@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.andengine.engine.Engine;
-import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.BoundCamera;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
@@ -36,7 +36,7 @@ public class ResourcesManager {
 	// Variables from Game Activity
 	// --------------------------------------------------------------//
 	public static GameActivity gameActivity;
-	public static Camera camera;
+	public static BoundCamera camera;
 	public static Engine engine;
 	public static VertexBufferObjectManager vertexBufferObjectManager;
 
@@ -74,6 +74,8 @@ public class ResourcesManager {
 	public static BuildableBitmapTextureAtlas mOnScreenControlTexture;
 	public static ITextureRegion mOnScreenControlBaseTextureRegion;
 	public static ITextureRegion mOnScreenControlKnobTextureRegion;
+	public static ITextureRegion placeTilesYesRegion;
+	public static ITextureRegion placeTilesNoRegion;
 
 	public static ITextureRegion playerRegion;
 
@@ -82,7 +84,7 @@ public class ResourcesManager {
 	// --------------------------------------------------------------//
 	// Class Logic
 	// --------------------------------------------------------------//
-	public static void prepare(GameActivity pGameActivity, Camera pCamera,
+	public static void prepare(GameActivity pGameActivity, BoundCamera pCamera,
 			VertexBufferObjectManager pVertexBufferObjectManager, Engine pEngine) {
 		gameActivity = pGameActivity;
 		camera = pCamera;
@@ -113,7 +115,7 @@ public class ResourcesManager {
 	private static void loadMenuGraphics() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
 		menuTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048,
-				2048, TextureOptions.BILINEAR);
+				2048, TextureOptions.DEFAULT);
 		menuBackgroundRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(menuTextureAtlas, gameActivity, "menu_background.png");
 		try {
@@ -160,7 +162,7 @@ public class ResourcesManager {
 	private static void loadTileGraphics() {
 		tileRegions = new HashMap<String, ITextureRegion>();
 		gameTilesTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(),
-				1024, 1024, TextureOptions.BILINEAR);
+				1024, 1024, TextureOptions.DEFAULT);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/tiles/");
 		try {
 			for (String tileName : ResourcesManager.gameActivity.getAssets()
@@ -185,7 +187,7 @@ public class ResourcesManager {
 
 	private static void loadBackgroundGraphics() {
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048,
-				2048, TextureOptions.BILINEAR);
+				2048, TextureOptions.REPEATING_NEAREST);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/background/");
 		skyBoxBottomRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(gameTextureAtlas, gameActivity, "skybox_bottom.png");
@@ -215,12 +217,16 @@ public class ResourcesManager {
 
 	private static void loadAnalogOnScreenController() {
 		mOnScreenControlTexture = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(),
-				256, 256, TextureOptions.BILINEAR);
+				512, 512, TextureOptions.DEFAULT);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/controller/");
 		mOnScreenControlBaseTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				mOnScreenControlTexture, gameActivity, "onscreen_control_base.png");
 		mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				mOnScreenControlTexture, gameActivity, "onscreen_control_knob.png");
+		placeTilesYesRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mOnScreenControlTexture, gameActivity, "yes.png");
+		placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mOnScreenControlTexture, gameActivity, "exit.png");
 		try {
 			mOnScreenControlTexture
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -253,7 +259,7 @@ public class ResourcesManager {
 	public static void loadSplashScreen() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		splashTextureAtlas = new BitmapTextureAtlas(gameActivity.getTextureManager(), 256, 256,
-				TextureOptions.BILINEAR);
+				TextureOptions.DEFAULT);
 		splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas,
 				gameActivity, "splash.png", 0, 0);
 		splashTextureAtlas.load();

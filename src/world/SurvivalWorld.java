@@ -1,6 +1,8 @@
 package world;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.scene.Scene;
+import org.andengine.input.touch.TouchEvent;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -41,6 +43,12 @@ public class SurvivalWorld extends World {
 	public void createForeground() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -2,7 +2,7 @@ package main;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.LimitedFPSEngine;
-import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
@@ -17,11 +17,11 @@ import manager.SceneManager;
 
 public class GameActivity extends BaseGameActivity {
 
-	private Camera camera;
+	private BoundCamera camera;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		camera = new Camera(0, 0, ResourcesManager.WIDTH, ResourcesManager.HEIGHT);
+		camera = new BoundCamera(0, 0, ResourcesManager.WIDTH, ResourcesManager.HEIGHT);
 		EngineOptions engineoptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
 				new RatioResolutionPolicy(ResourcesManager.WIDTH, ResourcesManager.HEIGHT),
 				this.camera);
