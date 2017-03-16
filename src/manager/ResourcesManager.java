@@ -17,6 +17,7 @@ import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSourc
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
@@ -61,6 +62,7 @@ public class ResourcesManager {
 	// --------------------------------------------------------------//
 	// Variables for Game Scene
 	// --------------------------------------------------------------//
+	// Tiles
 	public static Map<String, ITextureRegion> tileRegions;
 	public static Map<String, Boolean> tilePassability;
 
@@ -72,11 +74,20 @@ public class ResourcesManager {
 	public static TextureRegion sunRegion;
 
 	public static BuildableBitmapTextureAtlas mOnScreenControlTexture;
+
+	// Controller
 	public static ITextureRegion mOnScreenControlBaseTextureRegion;
 	public static ITextureRegion mOnScreenControlKnobTextureRegion;
-	public static ITextureRegion placeTilesYesRegion;
-	public static ITextureRegion placeTilesNoRegion;
 
+	public static ITextureRegion pauseRegion;
+	public static ITextureRegion menuRegion;
+
+	public static ITiledTextureRegion placeTilesYesRegion;
+	public static ITiledTextureRegion placeTilesNoRegion;
+
+	public static ITiledTextureRegion soundRegion;
+
+	// Player
 	public static ITextureRegion playerRegion;
 
 	private static BuildableBitmapTextureAtlas gameTextureAtlas;
@@ -103,8 +114,6 @@ public class ResourcesManager {
 
 	public static void loadGameResources() {
 		loadGameGraphics();
-		loadTiles();
-		loadAnalogOnScreenController();
 		loadGameFonts();
 		loadGameAudio();
 	}
@@ -157,6 +166,8 @@ public class ResourcesManager {
 		loadTileGraphics();
 		loadBackgroundGraphics();
 		loadPlayerGraphics();
+		loadTiles();
+		loadAnalogOnScreenController();
 	}
 
 	private static void loadTileGraphics() {
@@ -224,9 +235,15 @@ public class ResourcesManager {
 		mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				mOnScreenControlTexture, gameActivity, "onscreen_control_knob.png");
 		placeTilesYesRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mOnScreenControlTexture, gameActivity, "yes.png");
+				.createTiledFromAsset(mOnScreenControlTexture, gameActivity, "yes.png", 2, 1);
 		placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mOnScreenControlTexture, gameActivity, "exit.png");
+				.createTiledFromAsset(mOnScreenControlTexture, gameActivity, "no.png", 2, 1);
+		pauseRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mOnScreenControlTexture, gameActivity, "pause.png");
+		menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTexture,
+				gameActivity, "menu.png");
+		soundRegion = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(mOnScreenControlTexture, gameActivity, "sound.png", 2, 1);
 		try {
 			mOnScreenControlTexture
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(

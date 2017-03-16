@@ -1,5 +1,6 @@
 package world;
 
+import org.andengine.engine.Engine.EngineLock;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
@@ -28,6 +29,8 @@ public class CreativeWorld extends World {
 	private static final int GRID_WIDTH = 24;
 	private static final int GRID_HEIGHT = 24;
 	private static final int DIRT_WIDTH = 5;
+
+	private static final int MAX_DISTANCE = 3;
 
 	private static final int BACKGROUND_TILE_EDGE = 256;
 	private static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE
@@ -68,7 +71,7 @@ public class CreativeWorld extends World {
 		Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
 				j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, type);
 		grid.put(pos, newTile);
-		attachChild(newTile);
+		this.attachChild(newTile);
 		Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
 				fixedSolidObjectFixtureDef);
 		bodies.put(pos, body);
@@ -79,10 +82,13 @@ public class CreativeWorld extends World {
 		physicsWorld.destroyBody(bodies.get(pos));
 		bodies.remove(pos);
 		Tile t = grid.get(pos);
-		detachChild(t);
-		t.dispose();
 		grid.remove(pos);
+		final EngineLock engineLock = ResourcesManager.engine.getEngineLock();
+		engineLock.lock();
+		t.detachSelf();
+		t.dispose();
 		t = null;
+		engineLock.unlock();
 	}
 
 	@Override
@@ -128,7 +134,6 @@ public class CreativeWorld extends World {
 				if (placeMode == MODE_DELETE_TILES
 						&& grid.containsKey(new Position(blockX, blockY))) {
 					deleteTile(blockX, blockY);
-					// FIXME
 					return true;
 				} else if (placeMode == MODE_PLACE_TILES
 						&& !grid.containsKey(new Position(blockX, blockY))) {

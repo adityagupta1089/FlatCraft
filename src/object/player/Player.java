@@ -15,9 +15,11 @@ public abstract class Player extends Sprite {
 
 	protected Body playerBody;
 
+	private static final int PLAYER_BORDER = 5;
+
 	public Player(float pX, float pY, PhysicsWorld physicsWorld) {
-		super(pX, pY, Tile.TILE_EDGE, Tile.TILE_EDGE, ResourcesManager.playerRegion,
-				ResourcesManager.vertexBufferObjectManager);
+		super(pX, pY, Tile.TILE_EDGE - PLAYER_BORDER, Tile.TILE_EDGE - PLAYER_BORDER,
+				ResourcesManager.playerRegion, ResourcesManager.vertexBufferObjectManager);
 		playerBody = PhysicsFactory.createBoxBody(physicsWorld, this, BodyType.DynamicBody,
 				PhysicsFactory.createFixtureDef(1, 0f, 0.5f));
 		physicsWorld.registerPhysicsConnector(new PhysicsConnector(this, playerBody, true, false));
