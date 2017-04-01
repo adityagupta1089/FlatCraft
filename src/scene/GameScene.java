@@ -1,19 +1,30 @@
 package scene;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.sprite.TiledSprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.util.FPSCounter;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.color.Color;
+import org.andengine.util.debug.Debug;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -35,11 +46,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	private TiledSprite placeTilesYes;
 	private TiledSprite placeTilesNo;
 
+	private List<IEntity> entities;
+
 	// --------------------------------------------------------------//
 	// Class Logic
 	// --------------------------------------------------------------//
 	@Override
 	public void createScene() {
+		entities = new LinkedList<IEntity>();
+
 		createBackground();
 		createWorld();
 		createHUD();
@@ -47,18 +62,95 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		createAnalogOnScreenController();
 
 		this.setOnSceneTouchListener(this);
+
+		createFPSCounter();
+	}
+
+	private void createFPSCounter() {
+		final FPSCounter fpsCounter = new FPSCounter();
+		this.engine.registerUpdateHandler(fpsCounter);
+		final Text fpsText = new Text(250, 1000, ResourcesManager.caviarDreams, "FPS: XX.XX",
+				vertexBufferObjectManager);
+
+		gameHUD.attachChild(fpsText);
+
+		gameHUD.registerUpdateHandler(new TimerHandler(1 / 20.0f, true, new ITimerCallback() {
+			@Override
+			public void onTimePassed(final TimerHandler pTimerHandler) {
+				fpsText.setText("FPS: " + String.format("%2.2f", fpsCounter.getFPS()));
+			}
+		}));
 	}
 
 	@Override
 	public void onBackKeyPressed() {
+		if (ResourcesManager.gameMusic.isPlaying()) {
+			ResourcesManager.menuMusic.pause();
+		}
 		SceneManager.loadMenuScene(engine);
+	}
+
+	protected void clearPhysicsWorld(PhysicsWorld physicsWorld) {
+		Iterator<Body> localIterator = physicsWorld.getBodies();
+		while (true) {
+			if (!localIterator.hasNext()) {
+				physicsWorld.clearForces();
+				physicsWorld.clearPhysicsConnectors();
+				physicsWorld.reset();
+				physicsWorld.dispose();
+				physicsWorld = null;
+				return;
+			}
+			try {
+				physicsWorld.destroyBody(localIterator.next());
+			} catch (Exception e) {
+				Debug.e(e);
+			}
+		}
+	}
+
+	@Override
+	public void attachChild(IEntity pEntity) throws IllegalStateException {
+		entities.add(pEntity);
+		super.attachChild(pEntity);
+	}
+
+	public void cleanEntities() {
+		for (IEntity entity : entities) {
+			entity.clearEntityModifiers();
+			entity.clearUpdateHandlers();
+			entity.detachSelf();
+
+			if (!entity.isDisposed()) {
+				entity.dispose();
+			}
+		}
+
+		entities.clear();
+		entities = null;
+	}
+
+	public void clearScene() {
+		engine.runOnUpdateThread(new Runnable() {
+			@Override
+			public void run() {
+				clearPhysicsWorld(physicsWorld);
+				cleanEntities();
+				clearTouchAreas();
+				clearUpdateHandlers();
+				System.gc();
+			}
+		});
 	}
 
 	@Override
 	public void disposeScene() {
+		// TODO
+		if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
 		camera.setHUD(null);
 		camera.setChaseEntity(null);
 		camera.setCenter(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
+		clearScene();
 	}
 
 	// --------------------------------------------------------------//
@@ -142,7 +234,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 					float pTouchAreaLocalY) {
 				if (pSceneTouchEvent.isActionUp()) {
 					this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
-					// TODO change sound
+					if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
+					else ResourcesManager.gameMusic.play();
 					return true;
 				}
 				return false;

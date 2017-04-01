@@ -155,6 +155,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	@Override
 	public void disposeScene() {
 		// TODO Auto-generated method stub
+		if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
+		System.gc();
 
 	}
 
@@ -173,6 +175,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			float pMenuItemLocalX, float pMenuItemLocalY) {
 		switch (pMenuItem.getID()) {
 			case MENU_PLAY:
+				if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
 				SceneManager.loadGameScene(engine);
 				return true;
 			case MENU_OPTIONS:
@@ -185,6 +188,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				createHelpMenuScene();
 				return true;
 			case MENU_EXIT:
+				if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
 				System.exit(0);
 				return true;
 			case HELP_BACK:
@@ -216,6 +220,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	@Override
 	public void onBackKeyPressed() {
+		if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
 		System.exit(0);
 	}
 }

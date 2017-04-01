@@ -25,6 +25,8 @@ public class GameActivity extends BaseGameActivity {
 		EngineOptions engineoptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
 				new RatioResolutionPolicy(ResourcesManager.WIDTH, ResourcesManager.HEIGHT),
 				this.camera);
+		engineoptions.getAudioOptions().setNeedsMusic(true);
+		engineoptions.getAudioOptions().setNeedsSound(true);
 		return engineoptions;
 	}
 
@@ -45,7 +47,7 @@ public class GameActivity extends BaseGameActivity {
 	}
 
 	@Override
-	public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) {
+	public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) {		
 		mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() {
 			public void onTimePassed(final TimerHandler pTimerHandler) {
 				mEngine.unregisterUpdateHandler(pTimerHandler);

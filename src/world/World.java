@@ -1,9 +1,12 @@
 package world;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
@@ -31,6 +34,8 @@ public abstract class World extends Scene {
 	protected Map<Position, Tile> grid;
 	protected Map<Position, Body> bodies;
 	public Player player;
+
+	protected Set<IEntity> entities;
 
 	protected class Position {
 		public int x;
@@ -65,6 +70,7 @@ public abstract class World extends Scene {
 			.createFixtureDef(SOLID_OBJECT_DENSITY, SOLID_OBJECT_ELASTICITY, SOLID_OBJECT_FRICTION);
 
 	public World(Camera camera) {
+		entities = new HashSet<IEntity>();
 		createPhysics();
 
 		grid = new HashMap<Position, Tile>();

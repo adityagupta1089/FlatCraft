@@ -1,8 +1,12 @@
 package world;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.andengine.engine.Engine.EngineLock;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
@@ -10,6 +14,7 @@ import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.util.adt.color.Color;
+import org.andengine.util.debug.Debug;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -21,6 +26,7 @@ import object.tile.Tile;
 
 public class CreativeWorld extends World {
 
+	//@formatter:off
 	private static final float GRAVITY_X = 0;
 	private static final float GRAVITY_Y = 0;
 
@@ -33,10 +39,11 @@ public class CreativeWorld extends World {
 	private static final int MAX_DISTANCE = 3;
 
 	private static final int BACKGROUND_TILE_EDGE = 256;
-	private static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE
-			/ BACKGROUND_TILE_EDGE;
-	private static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE
-			/ BACKGROUND_TILE_EDGE;
+	private static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
+	private static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
+	//@formatter:on
+
+	private int tileNum = 0;
 
 	public CreativeWorld(BoundCamera camera) {
 		super(camera);
@@ -67,11 +74,16 @@ public class CreativeWorld extends World {
 	}
 
 	private void createTile(int i, int j, String type) {
+		if (tileNum == 0) ResourcesManager.place1.play();
+		else if (tileNum == 1) ResourcesManager.place2.play();
+		else ResourcesManager.place3.play();
+		tileNum = (tileNum + 1) % 3;
 		Position pos = new Position(i, j);
 		Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
 				j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, type);
 		grid.put(pos, newTile);
 		this.attachChild(newTile);
+		entities.add(newTile);
 		Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
 				fixedSolidObjectFixtureDef);
 		bodies.put(pos, body);
@@ -85,6 +97,7 @@ public class CreativeWorld extends World {
 		grid.remove(pos);
 		final EngineLock engineLock = ResourcesManager.engine.getEngineLock();
 		engineLock.lock();
+		entities.remove(t);
 		t.detachSelf();
 		t.dispose();
 		t = null;
@@ -105,22 +118,25 @@ public class CreativeWorld extends World {
 				} else {
 					temp = ResourcesManager.skyBoxSideHillsRegion;
 				}
-				attachChild(new Sprite(j * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2,
-						i * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, BACKGROUND_TILE_EDGE,
-						BACKGROUND_TILE_EDGE, temp, ResourcesManager.vertexBufferObjectManager));
+				//@formatter:off
+				Sprite bgtile = new Sprite(j * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, i * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, BACKGROUND_TILE_EDGE, BACKGROUND_TILE_EDGE, temp, ResourcesManager.vertexBufferObjectManager);
+				//@formatter:on
+				attachChild(bgtile);
+				entities.add(bgtile);
 			}
 		}
 	}
 
 	@Override
 	public void createPlayer(Camera camera) {
-		player = new CreativePlayer(GRID_WIDTH / 2 * Tile.TILE_EDGE,
-				(DIRT_WIDTH + 1) * Tile.TILE_EDGE, physicsWorld);
-		player.setPosition(player.getX() + player.getWidth() / 2,
-				player.getY() + player.getHeight() / 2);
+		//@formatter:off
+		player = new CreativePlayer(GRID_WIDTH / 2 * Tile.TILE_EDGE, (DIRT_WIDTH + 1) * Tile.TILE_EDGE, physicsWorld);
+		player.setPosition(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2);
+		//@formatter:on
 		camera.setCenter(player.getX(), player.getY());
 		camera.setChaseEntity(player);
 		this.attachChild(player);
+		entities.add(player);
 	}
 
 	@Override
@@ -129,14 +145,12 @@ public class CreativeWorld extends World {
 			int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
 			int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
 			// TODO max distance
-			if (blockX != ((int) player.getX()) / Tile.TILE_EDGE
-					|| blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
-				if (placeMode == MODE_DELETE_TILES
-						&& grid.containsKey(new Position(blockX, blockY))) {
+			//@formatter:off
+			if (blockX != ((int) player.getX()) / Tile.TILE_EDGE || blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
+				if (placeMode == MODE_DELETE_TILES && grid.containsKey(new Position(blockX, blockY))) {
 					deleteTile(blockX, blockY);
 					return true;
-				} else if (placeMode == MODE_PLACE_TILES
-						&& !grid.containsKey(new Position(blockX, blockY))) {
+				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY))) {
 					createTile(blockX, blockY, "DIRT");
 					return true;
 				} else {
@@ -145,9 +159,38 @@ public class CreativeWorld extends World {
 			} else {
 				return false;
 			}
+			//@formatter:on
 		} else {
 			return false;
 		}
+	}
+
+	public void cleanEntities() {
+		for (IEntity entity : entities) {
+			entity.clearEntityModifiers();
+			entity.clearUpdateHandlers();
+			entity.detachSelf();
+
+			if (!entity.isDisposed()) {
+				entity.dispose();
+			}
+		}
+
+		entities.clear();
+		entities = null;
+	}
+
+	@Override
+	public void dispose() {
+		ResourcesManager.engine.runOnUpdateThread(new Runnable() {
+			@Override
+			public void run() {
+				cleanEntities();
+				clearTouchAreas();
+				clearUpdateHandlers();
+				System.gc();
+			}
+		});
 	}
 
 }

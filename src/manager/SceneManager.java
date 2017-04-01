@@ -1,10 +1,12 @@
 package manager;
 
+import org.andengine.audio.music.Music;
 import org.andengine.engine.Engine;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.ui.IGameInterface.OnCreateSceneCallback;
 
+import android.media.MediaPlayer;
 import base.BaseScene;
 import scene.GameScene;
 import scene.LoadingScene;
@@ -50,6 +52,7 @@ public class SceneManager {
 	// --------------------------------------------------------------//
 	public static void createMenuScene() {
 		ResourcesManager.loadMenuResources();
+		ResourcesManager.menuMusic.play();
 		menuScene = new MainMenuScene();
 		loadingScene = new LoadingScene();
 		setScene(menuScene);
@@ -66,6 +69,7 @@ public class SceneManager {
 			public void onTimePassed(final TimerHandler pTimerHandler) {
 				mEngine.unregisterUpdateHandler(pTimerHandler);
 				ResourcesManager.loadGameResources();
+				ResourcesManager.gameMusic.play();
 				gameScene = new GameScene();
 				setScene(gameScene);
 			}
@@ -73,6 +77,7 @@ public class SceneManager {
 	}
 
 	public static void loadMenuScene(final Engine mEngine) {
+		ResourcesManager.menuMusic.play();
 		setScene(loadingScene);
 		gameScene.disposeScene();
 		ResourcesManager.unloadGameTextures();

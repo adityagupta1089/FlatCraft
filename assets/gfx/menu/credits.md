@@ -11,4 +11,6 @@ Harshita Modi
 Kenney
 ## Fonts
 *Caviar Dreams*: Lauren Thompson
+## Music 
+*Game & Menu Background Music*: Music: [Bensound.com](http://www.bensound.com/royalty-free-music)
 </center>
