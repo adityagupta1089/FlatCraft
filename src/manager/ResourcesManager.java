@@ -67,18 +67,21 @@ public class ResourcesManager {
 	public static Map<String, Boolean> tilePassability;
 
 	private static BuildableBitmapTextureAtlas gameTilesTextureAtlas;
+	private static BuildableBitmapTextureAtlas mOnScreenControlTextureAtlas;
+	private static BuildableBitmapTextureAtlas inventoryAtlas;
+	private static BuildableBitmapTextureAtlas gameTextureAtlas;
 
+	// misc. tiles
 	public static TextureRegion skyBoxBottomRegion;
 	public static TextureRegion skyBoxSideHillsRegion;
 	public static TextureRegion skyBoxTopRegion;
 	public static TextureRegion sunRegion;
 
-	public static BuildableBitmapTextureAtlas mOnScreenControlTexture;
-
 	// Controller
 	public static ITextureRegion mOnScreenControlBaseTextureRegion;
 	public static ITextureRegion mOnScreenControlKnobTextureRegion;
 
+	// game scene buttons
 	public static ITextureRegion pauseRegion;
 	public static ITextureRegion menuRegion;
 
@@ -90,7 +93,8 @@ public class ResourcesManager {
 	// Player
 	public static ITextureRegion playerRegion;
 
-	private static BuildableBitmapTextureAtlas gameTextureAtlas;
+	// Inventory
+	public static TextureRegion inventoryBaseRegion;
 
 	// --------------------------------------------------------------//
 	// Class Logic
@@ -168,6 +172,7 @@ public class ResourcesManager {
 		loadPlayerGraphics();
 		loadTiles();
 		loadAnalogOnScreenController();
+		loadInventoryGraphics();
 	}
 
 	private static void loadTileGraphics() {
@@ -227,28 +232,44 @@ public class ResourcesManager {
 	}
 
 	private static void loadAnalogOnScreenController() {
-		mOnScreenControlTexture = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(),
-				512, 512, TextureOptions.DEFAULT);
+		mOnScreenControlTextureAtlas = new BuildableBitmapTextureAtlas(
+				gameActivity.getTextureManager(), 512, 512, TextureOptions.DEFAULT);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/controller/");
 		mOnScreenControlBaseTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mOnScreenControlTexture, gameActivity, "onscreen_control_base.png");
+				mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_base.png");
 		mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mOnScreenControlTexture, gameActivity, "onscreen_control_knob.png");
+				mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_knob.png");
 		placeTilesYesRegion = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(mOnScreenControlTexture, gameActivity, "yes.png", 2, 1);
+				.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "yes.png", 2, 1);
 		placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(mOnScreenControlTexture, gameActivity, "no.png", 2, 1);
+				.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "no.png", 2, 1);
 		pauseRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mOnScreenControlTexture, gameActivity, "pause.png");
-		menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTexture,
-				gameActivity, "menu.png");
-		soundRegion = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(mOnScreenControlTexture, gameActivity, "sound.png", 2, 1);
+				.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "pause.png");
+		menuRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "menu.png");
+		soundRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+				mOnScreenControlTextureAtlas, gameActivity, "sound.png", 2, 1);
 		try {
-			mOnScreenControlTexture
+			mOnScreenControlTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 1, 0));
-			mOnScreenControlTexture.load();
+			mOnScreenControlTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Debug.e(e);
+		}
+	}
+
+	private static void loadInventoryGraphics() {
+		inventoryAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 1024,
+				1024, TextureOptions.DEFAULT);
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/inventory/");
+		inventoryBaseRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas,
+				gameActivity, "base.png");
+		try {
+			inventoryAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 1, 0));
+			inventoryAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}

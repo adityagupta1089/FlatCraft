@@ -1,6 +1,5 @@
 package scene;
 
-import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
@@ -19,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import base.BaseScene;
+import hud.FlatCraftHUD;
 import manager.ResourcesManager;
 import manager.SceneManager;
 import world.CreativeWorld;
@@ -28,7 +28,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	// --------------------------------------------------------------//
 	// Variables
 	// --------------------------------------------------------------//
-	private HUD gameHUD;
+	private FlatCraftHUD gameHUD;
 	private World world;
 	public PhysicsWorld physicsWorld;
 
@@ -69,7 +69,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	}
 
 	private void createHUD() {
-		gameHUD = new HUD();
+		gameHUD = new FlatCraftHUD();
 		camera.setHUD(gameHUD);
 	}
 
