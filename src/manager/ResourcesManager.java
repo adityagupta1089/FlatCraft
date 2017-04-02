@@ -30,8 +30,10 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
 
 import android.graphics.Color;
+import hud.FlatCraftHUD;
 import main.GameActivity;
 import object.tile.TilesLoader;
+import world.World;
 
 public class ResourcesManager {
 	// --------------------------------------------------------------//
@@ -111,6 +113,13 @@ public class ResourcesManager {
 	public static Music gameMusic;
 
 	public static Sound place1, place2, place3;
+
+	// Misc
+	public static FlatCraftHUD hud;
+	public static World world;
+
+	// Font
+	public static Font caviarDreamsGame;
 
 	// --------------------------------------------------------------//
 	// Class Logic
@@ -281,7 +290,12 @@ public class ResourcesManager {
 	}
 
 	private static void loadGameFonts() {
-		// TODO
+		// @formatter:off
+		FontFactory.setAssetBasePath("font/");
+		final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		caviarDreamsGame = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(), "CaviarDreams.ttf", 25, true, Color.WHITE);
+		caviarDreamsGame.load();
+		//@formatter:on
 	}
 
 	private static void loadGameAudio() {

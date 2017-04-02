@@ -14,9 +14,11 @@ public class InventoryItem extends Tile {
 
 	public InventoryItem(String pTileType, int cnt) {
 		super(0, 0, pTileType);
+		setScale(0.75f);
 		mCnt = cnt;
-		mText = new Text(this.getX(), this.getY(), ResourcesManager.caviarDreams,
-				String.valueOf(cnt), ResourcesManager.vertexBufferObjectManager);
+		mText = new Text(this.getX(), this.getY(), ResourcesManager.caviarDreamsGame, "00000",
+				ResourcesManager.vertexBufferObjectManager);
+		mText.setText(String.valueOf(cnt));
 		this.attachChild(mText);
 	}
 
@@ -30,14 +32,13 @@ public class InventoryItem extends Tile {
 		if (pSceneTouchEvent.isActionUp()) {
 			mHUD.currItem = this;
 			return true;
-		}
-		return false;
+		} else return false;
 	}
 
 	public boolean take() {
 		if (mCnt > 0) {
 			mCnt--;
-			mText.setText(String.valueOf(mText));
+			mText.setText(String.valueOf(mCnt));
 			return true;
 		} else {
 			return false;

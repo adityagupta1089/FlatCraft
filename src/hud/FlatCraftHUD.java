@@ -7,7 +7,6 @@ import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.sprite.Sprite;
 
 import manager.ResourcesManager;
-import world.World;
 
 public class FlatCraftHUD extends HUD {
 
@@ -16,10 +15,10 @@ public class FlatCraftHUD extends HUD {
 
 	public InventoryItem currItem;
 
-	public FlatCraftHUD(World world) {
+	public FlatCraftHUD() {
 		quickAccess = new LinkedList<InventoryItem>();
 		remainingTiles = new LinkedList<InventoryItem>();
-		world.onPopulateQuickAccess(quickAccess);
+		ResourcesManager.world.onPopulateQuickAccess(quickAccess);
 		Sprite base = new Sprite(ResourcesManager.WIDTH / 2,
 				100 + ResourcesManager.inventoryBaseRegion.getHeight() / 2,
 				ResourcesManager.WIDTH / 2, 131, ResourcesManager.inventoryBaseRegion,
@@ -31,9 +30,10 @@ public class FlatCraftHUD extends HUD {
 		final float deltaX = (Xn - X0) / 16;
 		final float pY = base.getY();
 		for (InventoryItem ie : quickAccess) {
+			if (cnt == 0) currItem = ie;
 			if (cnt++ < 8) {
 				ie.setListener(this);
-				ie.setPosition(X0 + (2 * cnt - 1) * deltaX + deltaX / 2, pY);
+				ie.setPosition(X0 + (2 * cnt - 1) * deltaX, pY);
 				attachChild(ie);
 				registerTouchArea(ie);
 			} else {

@@ -18,7 +18,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
-import hud.FlatCraftHUD;
 import hud.InventoryItem;
 import manager.ResourcesManager;
 import object.player.CreativePlayer;
@@ -45,11 +44,8 @@ public class CreativeWorld extends World {
 
 	private int tileNum = 0;
 
-	private FlatCraftHUD mHUD;
-
-	public CreativeWorld(BoundCamera camera, FlatCraftHUD hud) {
+	public CreativeWorld(BoundCamera camera) {
 		super(camera);
-		this.mHUD = hud;
 		camera.setBounds(0, 0, GRID_WIDTH * Tile.TILE_EDGE, GRID_HEIGHT * Tile.TILE_EDGE);
 		camera.setBoundsEnabled(true);
 		player.setLinearDamping(PLAYER_DAMPING);
@@ -147,15 +143,16 @@ public class CreativeWorld extends World {
 		if (pSceneTouchEvent.isActionUp()) {
 			int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
 			int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
-			// TODO max distance
+			int playerX = ((int) player.getX()) / Tile.TILE_EDGE;
+			int playerY = ((int) player.getY()) / Tile.TILE_EDGE;
 			//@formatter:off
 			if (blockX != ((int) player.getX()) / Tile.TILE_EDGE || blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
 				if (placeMode == MODE_DELETE_TILES && grid.containsKey(new Position(blockX, blockY))) {
 					deleteTile(blockX, blockY);
 					return true;
-				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY))) {
-					if(mHUD.currItem.take()){
-						createTile(blockX, blockY, mHUD.currItem.mTileType);
+				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY)) && Math.abs(playerX - blockX)+Math.abs(playerY - blockY) <= MAX_DISTANCE) {
+					if(ResourcesManager.hud.currItem.take()){
+						createTile(blockX, blockY,  ResourcesManager.hud.currItem.mTileType);
 						return true;
 					}else{
 						return false;
