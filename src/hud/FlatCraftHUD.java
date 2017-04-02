@@ -33,8 +33,8 @@ public class FlatCraftHUD extends HUD {
 			if (cnt == 0) currItem = ie;
 			if (cnt++ < 8) {
 				ie.setListener(this);
-				ie.setPosition(X0 + (2 * cnt - 1) * deltaX, pY);
 				attachChild(ie);
+				ie.setPosition(X0 + (2 * cnt - 1) * deltaX, pY);
 				registerTouchArea(ie);
 			} else {
 				remainingTiles.add(ie);
