@@ -13,6 +13,7 @@ import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.BoundCamera;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
@@ -119,6 +120,10 @@ public class ResourcesManager {
 	// Font
 	public static Font caviarDreamsGame;
 
+	// selector
+	public static Sprite selector;
+	public static TextureRegion selectorRegion;
+
 	// --------------------------------------------------------------//
 	// Class Logic
 	// --------------------------------------------------------------//
@@ -167,7 +172,16 @@ public class ResourcesManager {
 		try {
 			menuMusic = MusicFactory.createMusicFromAsset(engine.getMusicManager(), gameActivity, "mfx/menu.ogg");
 			menuMusic.setLooping(true);
+			menuMusic.setVolume(0.5f);
 		} catch (IOException e) {
+			Debug.e(e);
+		}
+		SoundFactory.setAssetBasePath("mfx/");
+		try{
+			placeBlockSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "placeBlock.ogg");
+			deleteBlockSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "deleteBlock.ogg");
+			buttonClickSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "buttonClick.ogg");
+		}catch(IOException e){
 			Debug.e(e);
 		}
 		//@formatter:on
@@ -269,6 +283,7 @@ public class ResourcesManager {
 		inventoryAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions.DEFAULT);
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/inventory/");
 		inventoryBaseRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas, gameActivity, "base.png");
+		selectorRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas, gameActivity, "selector.png");
 		try {
 			inventoryAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
 			inventoryAtlas.load();
@@ -293,9 +308,10 @@ public class ResourcesManager {
 		try {
 			gameMusic = MusicFactory.createMusicFromAsset(engine.getMusicManager(), gameActivity, "mfx/creative.ogg");
 			gameMusic.setLooping(true);
+			gameMusic.setVolume(0.5f);
 		} catch (IOException e) {
 			Debug.e(e);
-		}
+		}/*
 		SoundFactory.setAssetBasePath("mfx/");
 		try{
 			placeBlockSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "placeBlock.ogg");
@@ -303,7 +319,7 @@ public class ResourcesManager {
 			buttonClickSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "buttonClick.ogg");
 		}catch(IOException e){
 			Debug.e(e);
-		}
+		}*/
 		//@formatter:on
 	}
 

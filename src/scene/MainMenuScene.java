@@ -1,6 +1,10 @@
 package scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.menu.MenuScene;
 import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
 import org.andengine.entity.scene.menu.item.IMenuItem;
@@ -23,14 +27,13 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private MenuScene helpChildScene;
 
 	private final int MENU_PLAY = 0;
-	private final int MENU_OPTIONS = 1;
-	private final int MENU_CREDITS = 2;
-	private final int MENU_HELP = 3;
-	private final int MENU_EXIT = 4;
+	private final int MENU_CREDITS = 1;
+	private final int MENU_HELP = 2;
+	private final int MENU_EXIT = 3;
 
-	private final int HELP_BACK = 5;
+	private final int HELP_BACK = 4;
 
-	private final int CREDITS_BACK = 6;
+	private final int CREDITS_BACK = 5;
 
 	private static final int SPACING = 150;
 
@@ -42,14 +45,14 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 	private static final int VIEW_TOP_MARGIN = 250;
 	private static final int VIEW_BOTTOM_MARGIN = 180;
 
+	private List<IEntity> entities;
+
 	private void createMenuChildScene() {
 		menuChildScene = new MenuScene(camera);
 		menuChildScene.setPosition(0, -110);
 
 		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_PLAY,
 				ResourcesManager.caviarDreams, "PLAY", vertexBufferObjectManager), 1.2f, 1);
-		final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_OPTIONS,
-				ResourcesManager.caviarDreams, "OPTIONS", vertexBufferObjectManager), 1.2f, 1);
 		final IMenuItem creditsMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_CREDITS,
 				ResourcesManager.caviarDreams, "CREDITS", vertexBufferObjectManager), 1.2f, 1);
 		final IMenuItem helpMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_HELP,
@@ -58,7 +61,6 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				ResourcesManager.caviarDreams, "EXIT", vertexBufferObjectManager), 1.2f, 1);
 
 		menuChildScene.addMenuItem(playMenuItem);
-		menuChildScene.addMenuItem(optionsMenuItem);
 		menuChildScene.addMenuItem(creditsMenuItem);
 		menuChildScene.addMenuItem(helpMenuItem);
 		menuChildScene.addMenuItem(exitMenuItem);
@@ -67,10 +69,9 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		menuChildScene.setBackgroundEnabled(false);
 
 		playMenuItem.setPosition(playMenuItem.getX(), playMenuItem.getY() + 100);
-		optionsMenuItem.setPosition(optionsMenuItem.getX(), playMenuItem.getY() - SPACING);
-		creditsMenuItem.setPosition(optionsMenuItem.getX(), optionsMenuItem.getY() - SPACING);
-		helpMenuItem.setPosition(optionsMenuItem.getX(), creditsMenuItem.getY() - SPACING);
-		exitMenuItem.setPosition(optionsMenuItem.getX(), helpMenuItem.getY() - SPACING);
+		creditsMenuItem.setPosition(playMenuItem.getX(), playMenuItem.getY() - SPACING);
+		helpMenuItem.setPosition(playMenuItem.getX(), creditsMenuItem.getY() - SPACING);
+		exitMenuItem.setPosition(playMenuItem.getX(), helpMenuItem.getY() - SPACING);
 
 		menuChildScene.setOnMenuItemClickListener(this);
 
@@ -141,23 +142,53 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 		setChildScene(creditsChildScene);
 	}
 
-	private void createOptionsMenuScene() {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public void createScene() {
+		entities = new ArrayList<IEntity>();
 		createBackground();
 		createMenuChildScene();
 	}
 
 	@Override
-	public void disposeScene() {
-		// TODO Auto-generated method stub
-		if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
-		System.gc();
+	public void attachChild(IEntity pEntity) throws IllegalStateException {
+		entities.add(pEntity);
+		super.attachChild(pEntity);
+	}
 
+	public void cleanEntities() {
+		for (IEntity entity : entities) {
+			entity.clearEntityModifiers();
+			entity.clearUpdateHandlers();
+			entity.detachSelf();
+
+			if (!entity.isDisposed()) {
+				entity.dispose();
+			}
+		}
+
+		entities.clear();
+		entities = null;
+	}
+
+	public void clearScene() {
+		engine.runOnUpdateThread(new Runnable() {
+			@Override
+			public void run() {
+				cleanEntities();
+				clearTouchAreas();
+				clearUpdateHandlers();
+				System.gc();
+			}
+		});
+	}
+
+	@Override
+	public void disposeScene() {
+		if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
+		camera.setHUD(null);
+		camera.setChaseEntity(null);
+		camera.setCenter(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
+		clearScene();
 	}
 
 	private void createBackground() {
@@ -175,23 +206,25 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 			float pMenuItemLocalX, float pMenuItemLocalY) {
 		switch (pMenuItem.getID()) {
 			case MENU_PLAY:
+				ResourcesManager.buttonClickSound.play();
 				if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
 				SceneManager.loadGameScene(engine);
 				return true;
-			case MENU_OPTIONS:
-				createOptionsMenuScene();
-				return true;
 			case MENU_CREDITS:
+				ResourcesManager.buttonClickSound.play();
 				createCreditsMenuScene();
 				return true;
 			case MENU_HELP:
+				ResourcesManager.buttonClickSound.play();
 				createHelpMenuScene();
 				return true;
 			case MENU_EXIT:
+				ResourcesManager.buttonClickSound.play();
 				if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
 				System.exit(0);
 				return true;
 			case HELP_BACK:
+				ResourcesManager.buttonClickSound.play();
 				helpChildScene.dispose();
 				helpChildScene.detachSelf();
 				ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
@@ -203,6 +236,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 				setChildScene(menuChildScene);
 				return true;
 			case CREDITS_BACK:
+				ResourcesManager.buttonClickSound.play();
 				creditsChildScene.dispose();
 				creditsChildScene.detachSelf();
 				ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
@@ -220,6 +254,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
 	@Override
 	public void onBackKeyPressed() {
+		ResourcesManager.buttonClickSound.play();
 		if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
 		System.exit(0);
 	}

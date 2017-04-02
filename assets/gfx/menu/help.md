@@ -2,8 +2,6 @@
 
 # HELP
 
-![](pic.png)
-
 ## Controls
 Movement pad is provided on the screen during gameplay. use it to move the player. buttons for placing(tick) and deleting(cross) a tile has also been provided on the screen during gameplay. Inventory is on the lower portion of the screen and is used to access various types of tiles and other items. Buttons for sound on/off and returning to main menu are also there on the gameplay screen.
 

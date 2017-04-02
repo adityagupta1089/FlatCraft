@@ -1,6 +1,6 @@
 package hud;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.andengine.engine.camera.hud.HUD;
@@ -18,28 +18,39 @@ public class FlatCraftHUD extends HUD {
 	private List<IEntity> entities;
 
 	public FlatCraftHUD() {
-		entities = new LinkedList<IEntity>();
-		quickAccess = new LinkedList<InventoryItem>();
+		super();
+		entities = new ArrayList<IEntity>();
+		quickAccess = new ArrayList<InventoryItem>();
 		ResourcesManager.world.onPopulateQuickAccess(quickAccess);
+	}
+
+	public void initTiles() {
 		Sprite base = new Sprite(ResourcesManager.WIDTH / 2,
 				100 + ResourcesManager.inventoryBaseRegion.getHeight() / 2,
 				ResourcesManager.WIDTH / 2, 131, ResourcesManager.inventoryBaseRegion,
 				ResourcesManager.vertexBufferObjectManager);
 		attachChild(base);
+
 		int cnt = 0;
 		final float X0 = base.getX() - base.getWidth() / 2;
 		final float Xn = base.getX() + base.getWidth() / 2;
 		final float deltaX = (Xn - X0) / 16;
 		final float pY = base.getY();
+
+		ResourcesManager.selector = new Sprite(X0 + deltaX, pY, 2 * deltaX, base.getHeight(),
+				ResourcesManager.selectorRegion, ResourcesManager.vertexBufferObjectManager);
+
 		for (InventoryItem ie : quickAccess) {
 			if (cnt == 0) currItem = ie;
 			if (cnt++ < 8) {
 				ie.setListener(this);
-				attachChild(ie);
+				this.attachChild(ie);
 				ie.setPosition(X0 + (2 * cnt - 1) * deltaX, pY);
-				registerTouchArea(ie);
-			}
+				this.registerTouchArea(ie);
+			} else break;
 		}
+
+		this.attachChild(ResourcesManager.selector);
 	}
 
 	@Override

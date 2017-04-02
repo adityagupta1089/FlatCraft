@@ -31,18 +31,18 @@ public class CreativeWorld extends World {
 
 	private static final float PLAYER_DAMPING = 1.5f;
 
-	private static final int GRID_WIDTH = 24;
-	private static final int GRID_HEIGHT = 24;
-	private static final int DIRT_WIDTH = 5;
+	private static final int GRID_WIDTH = 30;
+	private static final int GRID_HEIGHT = 30;
+	private static final int DIRT_WIDTH = 10;
 
-	private static final int MAX_DISTANCE = 3;
+	//private static final int MAX_DISTANCE = 3;
 
 	private static final int BACKGROUND_TILE_EDGE = 256;
 	private static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
 	private static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
 	//@formatter:on
 
-	private int tileNum = 0;
+	//private int tileNum = 0;
 
 	public CreativeWorld(BoundCamera camera) {
 		super(camera);
@@ -73,10 +73,7 @@ public class CreativeWorld extends World {
 	}
 
 	private void createTile(int i, int j, String type) {
-		if (tileNum == 0) ResourcesManager.placeBlockSound.play();
-		else if (tileNum == 1) ResourcesManager.deleteBlockSound.play();
-		else ResourcesManager.buttonClickSound.play();
-		tileNum = (tileNum + 1) % 3;
+		ResourcesManager.placeBlockSound.play();
 		Position pos = new Position(i, j);
 		Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
 				j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, type);
@@ -91,6 +88,7 @@ public class CreativeWorld extends World {
 	}
 
 	private void deleteTile(int i, int j) {
+		ResourcesManager.deleteBlockSound.play();
 		Position pos = new Position(i, j);
 		physicsWorld.destroyBody(bodies.get(pos));
 		bodies.remove(pos);
@@ -145,10 +143,10 @@ public class CreativeWorld extends World {
 		if (pSceneTouchEvent.isActionUp()) {
 			int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
 			int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
-			int playerX = ((int) player.getX()) / Tile.TILE_EDGE;
-			int playerY = ((int) player.getY()) / Tile.TILE_EDGE;
-			if (Math.abs(playerX - blockX) + Math.abs(playerY - blockY) > MAX_DISTANCE)
-				return false;
+			//int playerX = ((int) player.getX()) / Tile.TILE_EDGE;
+			//int playerY = ((int) player.getY()) / Tile.TILE_EDGE;
+			// if (Math.abs(playerX - blockX) + Math.abs(playerY - blockY) > MAX_DISTANCE)
+			// return false;
 			//@formatter:off
 			if (blockX != ((int) player.getX()) / Tile.TILE_EDGE || blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
 				if (placeMode == MODE_DELETE_TILES && grid.containsKey(new Position(blockX, blockY))) {

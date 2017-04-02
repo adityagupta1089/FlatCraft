@@ -84,6 +84,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void onBackKeyPressed() {
+		ResourcesManager.buttonClickSound.play();
 		if (ResourcesManager.gameMusic.isPlaying()) {
 			ResourcesManager.menuMusic.pause();
 		}
@@ -145,7 +146,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 	@Override
 	public void disposeScene() {
-		// TODO
 		if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
 		camera.setHUD(null);
 		camera.setChaseEntity(null);
@@ -164,6 +164,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 		gameHUD = new FlatCraftHUD();
 		ResourcesManager.hud = gameHUD;
 		camera.setHUD(gameHUD);
+		gameHUD.initTiles();
 	}
 
 	private void createWorld() {
@@ -205,6 +206,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
 				if (pSceneTouchEvent.isActionUp()) {
+					ResourcesManager.buttonClickSound.play();
 					world.setPlaceMode(World.MODE_PLACE_TILES);
 					setMode(World.MODE_PLACE_TILES);
 					return true;
@@ -220,7 +222,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
+				if (pSceneTouchEvent.isActionUp()) {ResourcesManager.buttonClickSound.play();
 					world.setPlaceMode(World.MODE_DELETE_TILES);
 					setMode(World.MODE_DELETE_TILES);
 					return true;
@@ -234,7 +236,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
+				if (pSceneTouchEvent.isActionUp()) {ResourcesManager.buttonClickSound.play();
 					this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
 					if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
 					else ResourcesManager.gameMusic.play();
@@ -250,9 +252,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
 				if (pSceneTouchEvent.isActionUp()) {
-
+					ResourcesManager.buttonClickSound.play();
 					ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
-
 						@Override
 						public void run() {
 							DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {

@@ -1,7 +1,6 @@
 package world;
 
 import java.util.List;
-import java.util.Map;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
