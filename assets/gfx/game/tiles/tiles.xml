@@ -6,6 +6,26 @@
         passable="false" />
 
     <tile
+        name="CACTUS_SIDE"
+        passable="false" />
+
+    <tile
+        name="COTTON_BLUE"
+        passable="false" />
+
+    <tile
+        name="COTTON_GREEN"
+        passable="false" />
+
+    <tile
+        name="COTTON_RED"
+        passable="false" />
+
+    <tile
+        name="COTTON_TAN"
+        passable="false" />
+
+    <tile
         name="DIRT_GRASS"
         passable="false" />
 
@@ -14,23 +34,104 @@
         passable="false" />
 
     <tile
+        name="DIRT_SAND"
+        passable="false" />
+
+    <tile
+        name="DIRT_SNOW"
+        passable="false" />
+
+    <tile
+        name="FENCE_STONE"
+        passable="false" />
+
+    <tile
+        name="FENCE_WOOD"
+        passable="false" />
+
+    <tile
         name="GLASS"
         passable="false" />
 
     <tile
+        name="GRAVEL_DIRT"
+        passable="false" />
+
+    <tile
+        name="GRAVEL_STONE"
+        passable="false" />
+
+    <tile
+        name="GREYSAND"
+        passable="false" />
+
+    <tile
+        name="GREYSTONE"
+        passable="false" />
+
+    <tile
+        name="ICE"
+        passable="false" />
+
+    <tile
         name="LEAVES"
-        passable="true" />
+        passable="false" />
+
+    <tile
+        name="REDSAND"
+        passable="false" />
+
+    <tile
+        name="REDSTONE_SAND"
+        passable="false" />
+
+    <tile
+        name="SAND"
+        passable="false" />
+
+    <tile
+        name="SNOW"
+        passable="false" />
+
+    <tile
+        name="STONE_DIRT"
+        passable="false" />
+
+    <tile
+        name="STONE_GRASS"
+        passable="false" />
 
     <tile
         name="STONE"
         passable="false" />
 
     <tile
-        name="TRUNK_BOTTOM"
-        passable="true" />
+        name="STONE_SAND"
+        passable="false" />
 
     <tile
-        name="TRUNK_MID"
-        passable="true" />
+        name="STONE_SNOW"
+        passable="false" />
 
-</tiles>
+    <tile
+        name="TILES"
+        passable="false" />
+
+    <tile
+        name="TRUNK_SIDE"
+        passable="false" />
+
+    <tile
+        name="TRUNK_WHITE_SIDE"
+        passable="false" />
+
+    <tile
+        name="WOOD"
+        passable="false" />
+
+    <tile
+        name="WOOD_RED"
+        passable="false" />
+
+    <tiles>
+    </tiles>

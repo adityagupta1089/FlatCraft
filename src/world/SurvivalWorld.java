@@ -1,11 +1,15 @@
 package world;
 
+import java.util.List;
+import java.util.Map;
+
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
 import org.andengine.input.touch.TouchEvent;
 
 import com.badlogic.gdx.math.Vector2;
 
+import hud.InventoryItem;
 import object.player.SurvivalPlayer;
 
 public class SurvivalWorld extends World {
@@ -49,6 +53,12 @@ public class SurvivalWorld extends World {
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void onPopulateQuickAccess(List<InventoryItem> quickAccess) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

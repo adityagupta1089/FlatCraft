@@ -2,6 +2,7 @@ package world;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
+import hud.InventoryItem;
 import object.player.Player;
 import object.tile.Tile;
 
@@ -102,4 +104,6 @@ public abstract class World extends Scene {
 	public void setPlaceMode(int modePlaceTiles) {
 		this.placeMode = modePlaceTiles;
 	}
+	
+	public abstract void onPopulateQuickAccess(List<InventoryItem> quickAccess);
 }

@@ -161,12 +161,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	}
 
 	private void createHUD() {
-		gameHUD = new FlatCraftHUD();
+		gameHUD = new FlatCraftHUD(world);
 		camera.setHUD(gameHUD);
 	}
 
 	private void createWorld() {
-		world = new CreativeWorld(camera);
+		world = new CreativeWorld(camera, gameHUD);
 		attachChild(world);
 	}
 

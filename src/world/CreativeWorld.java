@@ -1,7 +1,6 @@
 package world;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.andengine.engine.Engine.EngineLock;
 import org.andengine.engine.camera.BoundCamera;
@@ -14,12 +13,13 @@ import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.util.adt.color.Color;
-import org.andengine.util.debug.Debug;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
+import hud.FlatCraftHUD;
+import hud.InventoryItem;
 import manager.ResourcesManager;
 import object.player.CreativePlayer;
 import object.tile.Tile;
@@ -45,8 +45,11 @@ public class CreativeWorld extends World {
 
 	private int tileNum = 0;
 
-	public CreativeWorld(BoundCamera camera) {
+	private FlatCraftHUD mHUD;
+
+	public CreativeWorld(BoundCamera camera, FlatCraftHUD hud) {
 		super(camera);
+		this.mHUD = hud;
 		camera.setBounds(0, 0, GRID_WIDTH * Tile.TILE_EDGE, GRID_HEIGHT * Tile.TILE_EDGE);
 		camera.setBoundsEnabled(true);
 		player.setLinearDamping(PLAYER_DAMPING);
@@ -151,8 +154,12 @@ public class CreativeWorld extends World {
 					deleteTile(blockX, blockY);
 					return true;
 				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY))) {
-					createTile(blockX, blockY, "DIRT");
-					return true;
+					if(mHUD.currItem.take()){
+						createTile(blockX, blockY, mHUD.currItem.mTileType);
+						return true;
+					}else{
+						return false;
+					}
 				} else {
 					return false;
 				}
@@ -191,6 +198,43 @@ public class CreativeWorld extends World {
 				System.gc();
 			}
 		});
+	}
+
+	@Override
+	public void onPopulateQuickAccess(List<InventoryItem> qa) {
+		qa.add(new InventoryItem("BRICK_RED", 100));
+		qa.add(new InventoryItem("CACTUS_SIDE", 100));
+		qa.add(new InventoryItem("COTTON_BLUE", 100));
+		qa.add(new InventoryItem("COTTON_GREEN", 100));
+		qa.add(new InventoryItem("COTTON_RED", 100));
+		qa.add(new InventoryItem("COTTON_TAN", 100));
+		qa.add(new InventoryItem("DIRT_GRASS", 100));
+		qa.add(new InventoryItem("DIRT", 100));
+		qa.add(new InventoryItem("DIRT_SAND", 100));
+		qa.add(new InventoryItem("DIRT_SNOW", 100));
+		qa.add(new InventoryItem("FENCE_STONE", 100));
+		qa.add(new InventoryItem("FENCE_WOOD", 100));
+		qa.add(new InventoryItem("GLASS", 100));
+		qa.add(new InventoryItem("GRAVEL_DIRT", 100));
+		qa.add(new InventoryItem("GRAVEL_STONE", 100));
+		qa.add(new InventoryItem("GREYSAND", 100));
+		qa.add(new InventoryItem("GREYSTONE", 100));
+		qa.add(new InventoryItem("ICE", 100));
+		qa.add(new InventoryItem("LEAVES", 100));
+		qa.add(new InventoryItem("REDSAND", 100));
+		qa.add(new InventoryItem("REDSTONE_SAND", 100));
+		qa.add(new InventoryItem("SAND", 100));
+		qa.add(new InventoryItem("SNOW", 100));
+		qa.add(new InventoryItem("STONE_DIRT", 100));
+		qa.add(new InventoryItem("STONE_GRASS", 100));
+		qa.add(new InventoryItem("STONE", 100));
+		qa.add(new InventoryItem("STONE_SAND", 100));
+		qa.add(new InventoryItem("STONE_SNOW", 100));
+		qa.add(new InventoryItem("TRUNK_SIDE", 100));
+		qa.add(new InventoryItem("TRUNK_WHITE_SIDE", 100));
+		qa.add(new InventoryItem("WOOD", 100));
+		qa.add(new InventoryItem("WOOD_RED", 100));
+
 	}
 
 }

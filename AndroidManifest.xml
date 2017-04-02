@@ -1,6 +1,6 @@
 <!DOCTYPE xml>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="csp203.petalplug3"
+    package="csp203.flatcraft"
     android:versionCode="1"
     android:versionName="1.0" >
 
