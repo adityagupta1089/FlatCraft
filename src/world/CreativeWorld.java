@@ -73,9 +73,9 @@ public class CreativeWorld extends World {
 	}
 
 	private void createTile(int i, int j, String type) {
-		if (tileNum == 0) ResourcesManager.place1.play();
-		else if (tileNum == 1) ResourcesManager.place2.play();
-		else ResourcesManager.place3.play();
+		if (tileNum == 0) ResourcesManager.placeBlockSound.play();
+		else if (tileNum == 1) ResourcesManager.deleteBlockSound.play();
+		else ResourcesManager.buttonClickSound.play();
 		tileNum = (tileNum + 1) % 3;
 		Position pos = new Position(i, j);
 		Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
@@ -83,9 +83,11 @@ public class CreativeWorld extends World {
 		grid.put(pos, newTile);
 		this.attachChild(newTile);
 		entities.add(newTile);
-		Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
-				fixedSolidObjectFixtureDef);
-		bodies.put(pos, body);
+		if (!newTile.passable) {
+			Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
+					fixedSolidObjectFixtureDef);
+			bodies.put(pos, body);
+		}
 	}
 
 	private void deleteTile(int i, int j) {
@@ -145,12 +147,14 @@ public class CreativeWorld extends World {
 			int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
 			int playerX = ((int) player.getX()) / Tile.TILE_EDGE;
 			int playerY = ((int) player.getY()) / Tile.TILE_EDGE;
+			if (Math.abs(playerX - blockX) + Math.abs(playerY - blockY) > MAX_DISTANCE)
+				return false;
 			//@formatter:off
 			if (blockX != ((int) player.getX()) / Tile.TILE_EDGE || blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
 				if (placeMode == MODE_DELETE_TILES && grid.containsKey(new Position(blockX, blockY))) {
 					deleteTile(blockX, blockY);
 					return true;
-				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY)) && Math.abs(playerX - blockX)+Math.abs(playerY - blockY) <= MAX_DISTANCE) {
+				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY))) {
 					if(ResourcesManager.hud.currItem.take()){
 						createTile(blockX, blockY,  ResourcesManager.hud.currItem.mTileType);
 						return true;
@@ -200,37 +204,13 @@ public class CreativeWorld extends World {
 	@Override
 	public void onPopulateQuickAccess(List<InventoryItem> qa) {
 		qa.add(new InventoryItem("BRICK_RED", 100));
-		qa.add(new InventoryItem("CACTUS_SIDE", 100));
 		qa.add(new InventoryItem("COTTON_BLUE", 100));
 		qa.add(new InventoryItem("COTTON_GREEN", 100));
 		qa.add(new InventoryItem("COTTON_RED", 100));
 		qa.add(new InventoryItem("COTTON_TAN", 100));
-		qa.add(new InventoryItem("DIRT_GRASS", 100));
-		qa.add(new InventoryItem("DIRT", 100));
-		qa.add(new InventoryItem("DIRT_SAND", 100));
-		qa.add(new InventoryItem("DIRT_SNOW", 100));
-		qa.add(new InventoryItem("FENCE_STONE", 100));
 		qa.add(new InventoryItem("FENCE_WOOD", 100));
-		qa.add(new InventoryItem("GLASS", 100));
-		qa.add(new InventoryItem("GRAVEL_DIRT", 100));
-		qa.add(new InventoryItem("GRAVEL_STONE", 100));
-		qa.add(new InventoryItem("GREYSAND", 100));
-		qa.add(new InventoryItem("GREYSTONE", 100));
-		qa.add(new InventoryItem("ICE", 100));
-		qa.add(new InventoryItem("LEAVES", 100));
-		qa.add(new InventoryItem("REDSAND", 100));
-		qa.add(new InventoryItem("REDSTONE_SAND", 100));
-		qa.add(new InventoryItem("SAND", 100));
-		qa.add(new InventoryItem("SNOW", 100));
-		qa.add(new InventoryItem("STONE_DIRT", 100));
-		qa.add(new InventoryItem("STONE_GRASS", 100));
 		qa.add(new InventoryItem("STONE", 100));
-		qa.add(new InventoryItem("STONE_SAND", 100));
-		qa.add(new InventoryItem("STONE_SNOW", 100));
-		qa.add(new InventoryItem("TRUNK_SIDE", 100));
-		qa.add(new InventoryItem("TRUNK_WHITE_SIDE", 100));
 		qa.add(new InventoryItem("WOOD", 100));
-		qa.add(new InventoryItem("WOOD_RED", 100));
 
 	}
 

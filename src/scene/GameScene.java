@@ -282,39 +282,23 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			}
 		};
 
-		Sprite pauseSprite = new Sprite(200, 900, ResourcesManager.pauseRegion,
-				vertexBufferObjectManager) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					// TODO pause
-					return true;
-				}
-				return false;
-			}
-		};
-
 		placeTilesYes.setScale(1.5f);
 		placeTilesNo.setScale(1.5f);
 
 		soundSprite.setScale(1.5f * 88f / 100f);
 
-		pauseSprite.setScale(1.5f * 88f / 100f);
 		menuSprite.setScale(1.5f * 88f / 100f);
 
 		gameHUD.attachChild(placeTilesYes);
 		gameHUD.attachChild(placeTilesNo);
 		gameHUD.attachChild(soundSprite);
 
-		gameHUD.attachChild(pauseSprite);
 		gameHUD.attachChild(menuSprite);
 
 		gameHUD.registerTouchArea(placeTilesYes);
 		gameHUD.registerTouchArea(placeTilesNo);
 		gameHUD.registerTouchArea(soundSprite);
 
-		gameHUD.registerTouchArea(pauseSprite);
 		gameHUD.registerTouchArea(menuSprite);
 	}
 

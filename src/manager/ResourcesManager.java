@@ -88,14 +88,12 @@ public class ResourcesManager {
 	public static TextureRegion skyBoxBottomRegion;
 	public static TextureRegion skyBoxSideHillsRegion;
 	public static TextureRegion skyBoxTopRegion;
-	public static TextureRegion sunRegion;
 
 	// Controller
 	public static ITextureRegion mOnScreenControlBaseTextureRegion;
 	public static ITextureRegion mOnScreenControlKnobTextureRegion;
 
 	// game scene buttons
-	public static ITextureRegion pauseRegion;
 	public static ITextureRegion menuRegion;
 
 	public static ITiledTextureRegion placeTilesYesRegion;
@@ -112,7 +110,7 @@ public class ResourcesManager {
 	// Music & Sound
 	public static Music gameMusic;
 
-	public static Sound place1, place2, place3;
+	public static Sound placeBlockSound, deleteBlockSound, buttonClickSound;
 
 	// Misc
 	public static FlatCraftHUD hud;
@@ -167,7 +165,7 @@ public class ResourcesManager {
 	private static void loadMenuAudio() {
 		//@formatter:off
 		try {
-			menuMusic = MusicFactory.createMusicFromAsset(engine.getMusicManager(), gameActivity, "mfx/menu.mp3");
+			menuMusic = MusicFactory.createMusicFromAsset(engine.getMusicManager(), gameActivity, "mfx/menu.ogg");
 			menuMusic.setLooping(true);
 		} catch (IOException e) {
 			Debug.e(e);
@@ -198,7 +196,6 @@ public class ResourcesManager {
 	private static void loadGameGraphics() {
 		loadTileGraphics();
 		loadBackgroundGraphics();
-		loadPlayerGraphics();
 		loadTiles();
 		loadAnalogOnScreenController();
 		loadInventoryGraphics();
@@ -235,8 +232,6 @@ public class ResourcesManager {
 		skyBoxBottomRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "skybox_bottom.png");
 		skyBoxSideHillsRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "skybox_sideHills.png");
 		skyBoxTopRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "skybox_top.png");
-		sunRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "sun.png");
-		//TODO temp
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/characters/");
 		playerRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,	gameActivity, "player.png");
 		try {
@@ -249,10 +244,6 @@ public class ResourcesManager {
 		//@formatter:on
 	}
 
-	private static void loadPlayerGraphics() {
-		// TODO
-	}
-
 	private static void loadAnalogOnScreenController() {
 		//@formatter:off
 		mOnScreenControlTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 512, 512, TextureOptions.DEFAULT);
@@ -261,7 +252,6 @@ public class ResourcesManager {
 		mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_knob.png");
 		placeTilesYesRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "yes.png", 2, 1);
 		placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "no.png", 2, 1);
-		pauseRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "pause.png");
 		menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "menu.png");
 		soundRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "sound.png", 2, 1);
 		try {
@@ -301,16 +291,16 @@ public class ResourcesManager {
 	private static void loadGameAudio() {
 		//@formatter:off
 		try {
-			gameMusic = MusicFactory.createMusicFromAsset(engine.getMusicManager(), gameActivity, "mfx/creative.mp3");
+			gameMusic = MusicFactory.createMusicFromAsset(engine.getMusicManager(), gameActivity, "mfx/creative.ogg");
 			gameMusic.setLooping(true);
 		} catch (IOException e) {
 			Debug.e(e);
 		}
 		SoundFactory.setAssetBasePath("mfx/");
 		try{
-			place1 = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "place1.ogg");
-			place2 = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "place2.ogg");
-			place3 = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "place3.ogg");
+			placeBlockSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "placeBlock.ogg");
+			deleteBlockSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "deleteBlock.ogg");
+			buttonClickSound = SoundFactory.createSoundFromAsset(engine.getSoundManager(), gameActivity, "buttonClick.ogg");
 		}catch(IOException e){
 			Debug.e(e);
 		}
