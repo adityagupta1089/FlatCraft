@@ -283,7 +283,7 @@ public class ResourcesManager {
 		// @formatter:off
 		FontFactory.setAssetBasePath("font/");
 		final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		caviarDreamsGame = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(), "CaviarDreams.ttf", 25, true, Color.WHITE);
+		caviarDreamsGame = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(), "CaviarDreams.ttf", 50, true, Color.WHITE);
 		caviarDreamsGame.load();
 		//@formatter:on
 	}

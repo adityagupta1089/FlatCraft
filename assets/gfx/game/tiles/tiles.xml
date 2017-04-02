@@ -30,6 +30,14 @@
         passable="false" />
 
     <tile
+        name="DIRT"
+        passable="false" />
+
+    <tile
+        name="DIRT_GRASS"
+        passable="false" />
+
+    <tile
         name="WOOD"
         passable="false" />
 
