@@ -2,10 +2,7 @@ package manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import org.andengine.audio.music.Music;
 import org.andengine.audio.music.MusicFactory;
@@ -29,11 +26,18 @@ import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
+import org.andengine.util.texturepack.TexturePack;
+import org.andengine.util.texturepack.TexturePackLoader;
+import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
+import org.andengine.util.texturepack.exception.TexturePackParseException;
 
 import android.graphics.Color;
+import android.util.Log;
+import android.util.SparseArray;
 import hud.FlatCraftHUD;
 import main.GameActivity;
-import object.tile.TilesLoader;
+import spritesheet.BackgroundSpritesheet;
+import spritesheet.TileSpritesheet;
 import world.World;
 
 public class ResourcesManager {
@@ -77,15 +81,15 @@ public class ResourcesManager {
 	private static List<BuildableBitmapTextureAtlas> atlases = new ArrayList<BuildableBitmapTextureAtlas>();
 
 	// Tiles
-	public static Map<String, ITextureRegion> tileRegions;
-	public static Map<String, Boolean> tilePassability;
+	public static SparseArray<TextureRegion> tileRegions;
 
-	private static BuildableBitmapTextureAtlas gameTilesTextureAtlas;
+	private static TexturePackTextureRegionLibrary mSpritesheetTexturePackTextureRegionLibrary;
 	private static BuildableBitmapTextureAtlas mOnScreenControlTextureAtlas;
 	private static BuildableBitmapTextureAtlas inventoryAtlas;
 	private static BuildableBitmapTextureAtlas gameTextureAtlas;
 
-	// misc. tiles
+	// Background
+	private static TexturePackTextureRegionLibrary mBackgroundSpritesheetTexturePackTextureRegionLibrary;
 	public static TextureRegion skyBoxBottomRegion;
 	public static TextureRegion skyBoxSideHillsRegion;
 	public static TextureRegion skyBoxTopRegion;
@@ -210,42 +214,53 @@ public class ResourcesManager {
 	private static void loadGameGraphics() {
 		loadTileGraphics();
 		loadBackgroundGraphics();
-		loadTiles();
+		loadPlayerGraphics();
 		loadAnalogOnScreenController();
 		loadInventoryGraphics();
 	}
 
 	private static void loadTileGraphics() {
 		//@formatter:off
-		tileRegions = new HashMap<String, ITextureRegion>();
-		gameTilesTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions.DEFAULT);
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/tiles/");
 		try {
-			for (String tileName : ResourcesManager.gameActivity.getAssets().list("gfx/game/tiles")) {
-				if (!tileName.contains(".png")) continue;
-				ITextureRegion tempRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTilesTextureAtlas, gameActivity, tileName);
-				tileRegions.put(tileName.split("\\.")[0].toUpperCase(Locale.ENGLISH), tempRegion);
+			final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity.getTextureManager());
+			final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/tiles/tiles.xml", "gfx/game/tiles/");
+			spritesheetTexturePack.loadTexture();
+			mSpritesheetTexturePackTextureRegionLibrary = spritesheetTexturePack.getTexturePackTextureRegionLibrary();
+		} catch (final TexturePackParseException e) {
+			Debug.e(e);
+		}
+		tileRegions = new SparseArray<TextureRegion>();
+		try {
+			for(int i = TileSpritesheet.MIN_INDEX; i <= TileSpritesheet.MAX_INDEX; i++){
+				TextureRegion tempRegion = mSpritesheetTexturePackTextureRegionLibrary.get(i);
+				tileRegions.put(i, tempRegion);
+				Log.d("FlatCraft", "Tile: " + i + " " + tempRegion);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		try {
-			gameTilesTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
-			gameTilesTextureAtlas.load();
-			atlases.add(gameTilesTextureAtlas);
-		} catch (final TextureAtlasBuilderException e) {
-			Debug.e(e);
 		}
 		//@formatter:on
 	}
 
 	private static void loadBackgroundGraphics() {
 		//@formatter:off
+		try {
+			final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity.getTextureManager());
+			final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/background/background.xml", "gfx/game/background/");
+			spritesheetTexturePack.loadTexture();
+			mBackgroundSpritesheetTexturePackTextureRegionLibrary = spritesheetTexturePack.getTexturePackTextureRegionLibrary();
+		} catch (final TexturePackParseException e) {
+			Debug.e(e);
+		}
+		skyBoxBottomRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet.SKYBOX_BOTTOM_ID);
+		skyBoxSideHillsRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet.SKYBOX_SIDEHILLS_ID);
+		skyBoxTopRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet.SKYBOX_TOP_ID);
+		//@formatter:on
+	}
+
+	private static void loadPlayerGraphics() {
+		//@formatter:off
 		gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048, TextureOptions.REPEATING_NEAREST);
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/background/");
-		skyBoxBottomRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "skybox_bottom.png");
-		skyBoxSideHillsRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "skybox_sideHills.png");
-		skyBoxTopRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "skybox_top.png");
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/characters/");
 		playerRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,	gameActivity, "player.png");
 		try {
@@ -321,10 +336,6 @@ public class ResourcesManager {
 			Debug.e(e);
 		}*/
 		//@formatter:on
-	}
-
-	private static void loadTiles() {
-		TilesLoader.loadTiles();
 	}
 
 	public static void unloadGameTextures() {

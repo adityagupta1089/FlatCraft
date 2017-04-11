@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texture version="1" file="items.png" type="bitmap" width="910" height="390" pixelformat="RGBA_4444" minfilter="linear" magfilter="linear" wrapt="clamp" wraps="clamp" premultiplyalpha="false">
+    <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker -->
+    <!-- $TexturePacker:SmartUpdate:e310bf9582d21ad0b912e02a21bdf580:57fb3c3edf69d6d0685f0019cd72daf6:00d24ad12ec948d1850bacec33a21a8f$ -->
+    <textureregion id="0" src="axe_bronze.png" x="1" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="1" src="axe_diamond.png" x="1" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="2" src="axe_gold.png" x="1" y="261" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="3" src="axe_iron.png" x="131" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="4" src="axe_silver.png" x="131" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="5" src="hammer_bronze.png" x="131" y="261" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="6" src="hammer_diamond.png" x="261" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="7" src="hammer_gold.png" x="261" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="8" src="hammer_iron.png" x="261" y="261" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="9" src="hammer_silver.png" x="391" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="10" src="pick_bronze.png" x="391" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="11" src="pick_diamond.png" x="391" y="261" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="12" src="pick_gold.png" x="521" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="13" src="pick_iron.png" x="651" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="14" src="pick_silver.png" x="781" y="1" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="15" src="sword_bronze.png" x="521" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="16" src="sword_diamond.png" x="521" y="261" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="17" src="sword_gold.png" x="651" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="18" src="sword_iron.png" x="781" y="131" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+    <textureregion id="19" src="sword_silver.png" x="651" y="261" width="128" height="128" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="128" srcheight="128"/>
+</texture>

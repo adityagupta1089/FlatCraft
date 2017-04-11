@@ -12,7 +12,7 @@ public class InventoryItem extends Tile {
 	private int mCnt;
 	private Text mText;
 
-	public InventoryItem(String pTileType, int cnt) {
+	public InventoryItem(int pTileType, int cnt) {
 		super(0, 0, pTileType);
 		this.setCullingEnabled(false);
 		setScale(0.75f);

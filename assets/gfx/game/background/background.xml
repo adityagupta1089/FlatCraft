@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texture version="1" file="background.png" type="bitmap" width="1542" height="514" pixelformat="RGBA_4444" minfilter="linear" magfilter="linear" wrapt="clamp" wraps="clamp" premultiplyalpha="false">
+    <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker -->
+    <!-- $TexturePacker:SmartUpdate:14ee89de1247f11a228d8e5e46b5eab2:7ff04f17d7be7c19dce48b13e5b33e3f:a5aa08771dc5060647163c4b93a6accc$ -->
+    <textureregion id="0" src="skybox_bottom.png" x="1" y="1" width="512" height="512" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="512" srcheight="512"/>
+    <textureregion id="1" src="skybox_sideHills.png" x="515" y="1" width="512" height="512" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="512" srcheight="512"/>
+    <textureregion id="2" src="skybox_top.png" x="1029" y="1" width="512" height="512" rotated="false" trimmed="false" srcx="0" srcy="0" srcwidth="512" srcheight="512"/>
+</texture>

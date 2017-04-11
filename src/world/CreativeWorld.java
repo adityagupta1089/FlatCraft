@@ -22,6 +22,7 @@ import hud.InventoryItem;
 import manager.ResourcesManager;
 import object.player.CreativePlayer;
 import object.tile.Tile;
+import spritesheet.TileSpritesheet;
 
 public class CreativeWorld extends World {
 
@@ -31,8 +32,8 @@ public class CreativeWorld extends World {
 
 	private static final float PLAYER_DAMPING = 1.5f;
 
-	private static final int GRID_WIDTH = 30;
-	private static final int GRID_HEIGHT = 30;
+	private static final int GRID_WIDTH = 23;
+	private static final int GRID_HEIGHT = 23;
 	private static final int DIRT_WIDTH = 10;
 
 	//private static final int MAX_DISTANCE = 3;
@@ -42,7 +43,7 @@ public class CreativeWorld extends World {
 	private static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
 	//@formatter:on
 
-	//private int tileNum = 0;
+	// private int tileNum = 0;
 
 	public CreativeWorld(BoundCamera camera) {
 		super(camera);
@@ -62,34 +63,32 @@ public class CreativeWorld extends World {
 		/* Layers of dirt */
 		for (; i < DIRT_WIDTH; i++) {
 			for (int j = 0; j < GRID_WIDTH; j++) {
-				createTile(j, i, "DIRT");
+				createTile(j, i, TileSpritesheet.DIRT_ID);
 
 			}
 		}
 		/* One layer of grass */
 		for (int j = 0; j < GRID_WIDTH; j++) {
-			createTile(j, i, "DIRT_GRASS");
+			createTile(j, i, TileSpritesheet.DIRT_GRASS_ID);
 		}
 	}
 
-	private void createTile(int i, int j, String type) {
+	private void createTile(int i, int j, int type) {
 		ResourcesManager.placeBlockSound.play();
-		Position pos = new Position(i, j);
+		int pos = position(i, j);
 		Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
 				j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, type);
 		grid.put(pos, newTile);
 		this.attachChild(newTile);
 		entities.add(newTile);
-		if (!newTile.passable) {
-			Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
-					fixedSolidObjectFixtureDef);
-			bodies.put(pos, body);
-		}
+		Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
+				fixedSolidObjectFixtureDef);
+		bodies.put(pos, body);
 	}
 
 	private void deleteTile(int i, int j) {
 		ResourcesManager.deleteBlockSound.play();
-		Position pos = new Position(i, j);
+		int pos = position(i, j);
 		physicsWorld.destroyBody(bodies.get(pos));
 		bodies.remove(pos);
 		Tile t = grid.get(pos);
@@ -140,19 +139,20 @@ public class CreativeWorld extends World {
 
 	@Override
 	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		// TODO infinite count, increase when deleted
 		if (pSceneTouchEvent.isActionUp()) {
 			int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
 			int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
-			//int playerX = ((int) player.getX()) / Tile.TILE_EDGE;
-			//int playerY = ((int) player.getY()) / Tile.TILE_EDGE;
+			// int playerX = ((int) player.getX()) / Tile.TILE_EDGE;
+			// int playerY = ((int) player.getY()) / Tile.TILE_EDGE;
 			// if (Math.abs(playerX - blockX) + Math.abs(playerY - blockY) > MAX_DISTANCE)
 			// return false;
 			//@formatter:off
 			if (blockX != ((int) player.getX()) / Tile.TILE_EDGE || blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
-				if (placeMode == MODE_DELETE_TILES && grid.containsKey(new Position(blockX, blockY))) {
+				if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) > 0) {
 					deleteTile(blockX, blockY);
 					return true;
-				} else if (placeMode == MODE_PLACE_TILES && !grid.containsKey(new Position(blockX, blockY))) {
+				} else if (placeMode == MODE_PLACE_TILES && grid.indexOfKey(position(blockX, blockY)) < 0) {
 					if(ResourcesManager.hud.currItem.take()){
 						createTile(blockX, blockY,  ResourcesManager.hud.currItem.mTileType);
 						return true;
@@ -201,15 +201,25 @@ public class CreativeWorld extends World {
 
 	@Override
 	public void onPopulateQuickAccess(List<InventoryItem> qa) {
-		qa.add(new InventoryItem("BRICK_RED", 100));
-		qa.add(new InventoryItem("COTTON_BLUE", 100));
-		qa.add(new InventoryItem("COTTON_GREEN", 100));
-		qa.add(new InventoryItem("COTTON_RED", 100));
-		qa.add(new InventoryItem("COTTON_TAN", 100));
-		qa.add(new InventoryItem("FENCE_WOOD", 100));
-		qa.add(new InventoryItem("STONE", 100));
-		qa.add(new InventoryItem("WOOD", 100));
+		// TODO add more inventory items
+		for (int i = TileSpritesheet.MIN_INDEX; i < TileSpritesheet.MAX_INDEX; i++) {
+			qa.add(new InventoryItem(i, 100));
+		}
+		/*
+		 * qa.add(new InventoryItem("BRICK_RED", 100));
+		 * qa.add(new InventoryItem("COTTON_BLUE", 100));
+		 * qa.add(new InventoryItem("COTTON_GREEN", 100));
+		 * qa.add(new InventoryItem("COTTON_RED", 100));
+		 * qa.add(new InventoryItem("COTTON_TAN", 100));
+		 * qa.add(new InventoryItem("FENCE_WOOD", 100));
+		 * qa.add(new InventoryItem("STONE", 100));
+		 * qa.add(new InventoryItem("WOOD", 100));
+		 */
 
+	}
+
+	private int position(int i, int j) {
+		return GRID_WIDTH * i + j;
 	}
 
 }

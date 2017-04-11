@@ -9,15 +9,12 @@ import manager.ResourcesManager;
 public class Tile extends Sprite {
 
 	public static int TILE_EDGE = 100;
-	public String mTileType;
+	public int mTileType;
 
-	public boolean passable;
-
-	public Tile(float pX, float pY, String pTileType) {
+	public Tile(float pX, float pY, int pTileType) {
 		super(pX, pY, TILE_EDGE, TILE_EDGE, ResourcesManager.tileRegions.get(pTileType),
 				ResourcesManager.vertexBufferObjectManager);
 		mTileType = pTileType;
-		this.passable = ResourcesManager.tilePassability.get(pTileType);
 		this.setCullingEnabled(true);
 	}
 
