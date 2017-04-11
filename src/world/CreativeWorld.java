@@ -2,21 +2,16 @@ package world;
 
 import java.util.List;
 
-import org.andengine.engine.Engine.EngineLock;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
-import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.util.adt.color.Color;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import hud.InventoryItem;
 import manager.ResourcesManager;
@@ -31,9 +26,7 @@ public class CreativeWorld extends World {
 	private static final float GRAVITY_Y = 0;
 
 	private static final float PLAYER_DAMPING = 1.5f;
-
-	private static final int GRID_WIDTH = 23;
-	private static final int GRID_HEIGHT = 23;
+	
 	private static final int DIRT_WIDTH = 10;
 
 	//private static final int MAX_DISTANCE = 3;
@@ -71,35 +64,6 @@ public class CreativeWorld extends World {
 		for (int j = 0; j < GRID_WIDTH; j++) {
 			createTile(j, i, TileSpritesheet.DIRT_GRASS_ID);
 		}
-	}
-
-	private void createTile(int i, int j, int type) {
-		ResourcesManager.placeBlockSound.play();
-		int pos = position(i, j);
-		Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
-				j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, type);
-		grid.put(pos, newTile);
-		this.attachChild(newTile);
-		entities.add(newTile);
-		Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
-				fixedSolidObjectFixtureDef);
-		bodies.put(pos, body);
-	}
-
-	private void deleteTile(int i, int j) {
-		ResourcesManager.deleteBlockSound.play();
-		int pos = position(i, j);
-		physicsWorld.destroyBody(bodies.get(pos));
-		bodies.remove(pos);
-		Tile t = grid.get(pos);
-		grid.remove(pos);
-		final EngineLock engineLock = ResourcesManager.engine.getEngineLock();
-		engineLock.lock();
-		entities.remove(t);
-		t.detachSelf();
-		t.dispose();
-		t = null;
-		engineLock.unlock();
 	}
 
 	@Override
@@ -171,34 +135,6 @@ public class CreativeWorld extends World {
 		}
 	}
 
-	public void cleanEntities() {
-		for (IEntity entity : entities) {
-			entity.clearEntityModifiers();
-			entity.clearUpdateHandlers();
-			entity.detachSelf();
-
-			if (!entity.isDisposed()) {
-				entity.dispose();
-			}
-		}
-
-		entities.clear();
-		entities = null;
-	}
-
-	@Override
-	public void dispose() {
-		ResourcesManager.engine.runOnUpdateThread(new Runnable() {
-			@Override
-			public void run() {
-				cleanEntities();
-				clearTouchAreas();
-				clearUpdateHandlers();
-				System.gc();
-			}
-		});
-	}
-
 	@Override
 	public void onPopulateQuickAccess(List<InventoryItem> qa) {
 		// TODO add more inventory items
@@ -216,10 +152,6 @@ public class CreativeWorld extends World {
 		 * qa.add(new InventoryItem("WOOD", 100));
 		 */
 
-	}
-
-	private int position(int i, int j) {
-		return GRID_WIDTH * i + j;
 	}
 
 }

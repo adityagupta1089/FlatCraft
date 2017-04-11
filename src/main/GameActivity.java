@@ -27,6 +27,7 @@ public class GameActivity extends BaseGameActivity {
 				this.camera);
 		engineoptions.getAudioOptions().setNeedsMusic(true);
 		engineoptions.getAudioOptions().setNeedsSound(true);
+		engineoptions.getRenderOptions().setDithering(true);
 		return engineoptions;
 	}
 
@@ -47,7 +48,7 @@ public class GameActivity extends BaseGameActivity {
 	}
 
 	@Override
-	public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) {		
+	public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) {
 		mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() {
 			public void onTimePassed(final TimerHandler pTimerHandler) {
 				mEngine.unregisterUpdateHandler(pTimerHandler);

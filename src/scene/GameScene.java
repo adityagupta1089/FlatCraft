@@ -74,7 +74,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
 		gameHUD.attachChild(fpsText);
 
-		gameHUD.registerUpdateHandler(new TimerHandler(1 / 20.0f, true, new ITimerCallback() {
+		gameHUD.registerUpdateHandler(new TimerHandler(1 / 20f, true, new ITimerCallback() {
 			@Override
 			public void onTimePassed(final TimerHandler pTimerHandler) {
 				fpsText.setText("FPS: " + String.format("%2.2f", fpsCounter.getFPS()));
@@ -222,7 +222,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {ResourcesManager.buttonClickSound.play();
+				if (pSceneTouchEvent.isActionUp()) {
+					ResourcesManager.buttonClickSound.play();
 					world.setPlaceMode(World.MODE_DELETE_TILES);
 					setMode(World.MODE_DELETE_TILES);
 					return true;
@@ -236,7 +237,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
 					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {ResourcesManager.buttonClickSound.play();
+				if (pSceneTouchEvent.isActionUp()) {
+					ResourcesManager.buttonClickSound.play();
 					this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
 					if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
 					else ResourcesManager.gameMusic.play();

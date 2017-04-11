@@ -32,7 +32,6 @@ import org.andengine.util.texturepack.TexturePackTextureRegionLibrary;
 import org.andengine.util.texturepack.exception.TexturePackParseException;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.util.SparseArray;
 import hud.FlatCraftHUD;
 import main.GameActivity;
@@ -234,7 +233,6 @@ public class ResourcesManager {
 			for(int i = TileSpritesheet.MIN_INDEX; i <= TileSpritesheet.MAX_INDEX; i++){
 				TextureRegion tempRegion = mSpritesheetTexturePackTextureRegionLibrary.get(i);
 				tileRegions.put(i, tempRegion);
-				Log.d("FlatCraft", "Tile: " + i + " " + tempRegion);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
