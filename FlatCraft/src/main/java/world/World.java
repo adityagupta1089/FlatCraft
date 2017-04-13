@@ -39,6 +39,10 @@ public abstract class World extends Scene {
     public static final int MODE_PLACE_TILES = 0;
     public static final int MODE_DELETE_TILES = 1;
 
+    protected static final int BACKGROUND_TILE_EDGE = 256;
+    protected static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
+    protected static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE / BACKGROUND_TILE_EDGE;
+
     protected SparseArray<Tile> grid;
     protected SparseArray<Body> bodies;
     public Player player;

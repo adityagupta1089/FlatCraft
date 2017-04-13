@@ -17,7 +17,7 @@ import org.andengine.ui.activity.BaseGameActivity;
 
 import manager.ResourcesManager;
 import manager.SceneManager;
-import scene.VolumePreferences;
+import scene.constants.VolumePreferences;
 
 public class GameActivity extends BaseGameActivity implements VolumePreferences {
 

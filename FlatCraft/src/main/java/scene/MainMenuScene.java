@@ -28,6 +28,8 @@ import base.BaseScene;
 import csp203.flatcraft.R;
 import manager.ResourcesManager;
 import manager.SceneManager;
+import scene.constants.GameModes;
+import scene.constants.VolumePreferences;
 
 public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener, VolumePreferences, GameModes {
 

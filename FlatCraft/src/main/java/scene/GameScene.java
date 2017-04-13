@@ -33,9 +33,10 @@ import base.BaseScene;
 import hud.FlatCraftHUD;
 import manager.ResourcesManager;
 import manager.SceneManager;
-import world.CreativeWorld;
-import world.MultiPlayerWorld;
-import world.SurvivalWorld;
+import scene.constants.GameModes;
+import world.single.CreativeWorld;
+import world.multi.MultiPlayerConstants;
+import world.single.SurvivalWorld;
 import world.World;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener, GameModes {
@@ -179,7 +180,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         if (mode == MODE_SINGLE_CREATIVE)
             world = new CreativeWorld(camera);
         else if (mode == MODE_MULTI_PLAYER)
-            world = new MultiPlayerWorld(camera);
+            world = new MultiPlayerConstants(camera);
         else if (mode == MODE_SINGLE_SURVIVAL)
             world = new SurvivalWorld(camera);
         ResourcesManager.world = world;

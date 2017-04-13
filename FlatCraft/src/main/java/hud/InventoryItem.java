@@ -48,4 +48,8 @@ public class InventoryItem extends Tile {
             return false;
         }
     }
+
+    public void give() {
+        mCnt++;
+    }
 }
