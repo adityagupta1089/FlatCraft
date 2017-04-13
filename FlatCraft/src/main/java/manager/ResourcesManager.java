@@ -121,6 +121,9 @@ public class ResourcesManager {
     public static FlatCraftHUD hud;
     public static World world;
 
+    public static float mfxVol;
+    public static float sfxVol;
+
     // Font
     public static Font caviarDreamsGame;
 

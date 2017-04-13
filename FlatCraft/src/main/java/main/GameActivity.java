@@ -56,11 +56,8 @@ public class GameActivity extends BaseGameActivity implements VolumePreferences 
     public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) {
         SharedPreferences sharedPreferences
                 = getSharedPreferences(VOLUME_PREFERENCES, Context.MODE_PRIVATE);
-        float mfxVol = sharedPreferences.getInt(MFX_VOL, 100) / 100f;
-        float sfxVol = sharedPreferences.getInt(SFX_VOL, 100) / 100f;
-        Log.d("Volume", mfxVol + "," + sfxVol);
-        mEngine.getMusicManager().setMasterVolume(mfxVol);
-        mEngine.getSoundManager().setMasterVolume(sfxVol);
+        ResourcesManager.mfxVol = sharedPreferences.getInt(MFX_VOL, 100) / 100f;
+        ResourcesManager.sfxVol = sharedPreferences.getInt(SFX_VOL, 100) / 100f;
         mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback() {
             public void onTimePassed(final TimerHandler pTimerHandler) {
                 mEngine.unregisterUpdateHandler(pTimerHandler);
@@ -86,6 +83,15 @@ public class GameActivity extends BaseGameActivity implements VolumePreferences 
 
     @Override
     protected void onPause() {
+        mEngine.getMusicManager().setMasterVolume(0);
+        mEngine.getSoundManager().setMasterVolume(0);
         super.onPause();
+    }
+
+    @Override
+    protected synchronized void onResume() {
+        mEngine.getMusicManager().setMasterVolume(ResourcesManager.mfxVol);
+        mEngine.getSoundManager().setMasterVolume(ResourcesManager.sfxVol);
+        super.onResume();
     }
 }

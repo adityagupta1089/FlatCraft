@@ -53,7 +53,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 	// --------------------------------------------------------------//
 	@Override
 	public void createScene() {
-		entities = new LinkedList<IEntity>();
+		engine.getMusicManager().setMasterVolume(ResourcesManager.mfxVol);
+		engine.getSoundManager().setMasterVolume(ResourcesManager.sfxVol);
+
+		entities = new LinkedList<>();
 
 		createBackground();
 		createWorld();

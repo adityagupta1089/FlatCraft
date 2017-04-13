@@ -149,7 +149,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        //nothing to do
+                        ResourcesManager.mfxVol = seekBar.getProgress()/100f;
                     }
                 });
                 final SeekBar sfxSeekBar = (SeekBar) dialogView.findViewById(R.id.seekBar2);
@@ -166,7 +166,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        //nothing to do
+                        ResourcesManager.sfxVol = seekBar.getProgress()/100f;
                     }
                 });
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -235,6 +235,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
     @Override
     public void createScene() {
+        engine.getMusicManager().setMasterVolume(ResourcesManager.mfxVol);
+        engine.getSoundManager().setMasterVolume(ResourcesManager.sfxVol);
         entities = new ArrayList<>();
         createBackground();
         createMenuChildScene();
