@@ -1,0 +1,5 @@
+include ':AndEngine'
+include ':AndEngineMultiplayerExtension'
+include ':AndEnginePhysicsBox2DExtension'
+include ':AndEngineTexturePackerExtension'
+include ':FlatCraft'

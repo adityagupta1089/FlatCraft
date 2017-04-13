@@ -1,0 +1,27 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        applicationId "csp203.flatcraft"
+        minSdkVersion 8
+        targetSdkVersion 25
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+}
+
+dependencies {
+    compile project(':AndEngine')
+    compile project(':AndEnginePhysicsBox2DExtension')
+    compile project(':AndEngineMultiplayerExtension')
+    compile project(':AndEngineTexturePackerExtension')
+}

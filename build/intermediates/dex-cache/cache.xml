@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="5e71e0b2cae81570b99b3621b5aff36b3257609b">
+        <dex dex="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_e6a25000c6f0d18dff71d666cd752c5d4be43712/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b749cbbcf1e54a3d89ee9fd5ed32714d9404a76b">
+        <dex dex="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_8125cc31249181a47a9e5ab6647928b778769700/classes.dex" />
+    </item>
+
+</items>
