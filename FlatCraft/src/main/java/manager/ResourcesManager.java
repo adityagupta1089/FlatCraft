@@ -55,8 +55,6 @@ public class ResourcesManager {
     public static Engine engine;
     public static VertexBufferObjectManager vertexBufferObjectManager;
 
-    public static ITextureRegion grassRegion;
-
     // --------------------------------------------------------------//
     // Variables for Splash Scene
     // --------------------------------------------------------------//
@@ -67,7 +65,6 @@ public class ResourcesManager {
     // Variables for Main Menu Scene
     // --------------------------------------------------------------//
     public static ITextureRegion menuBackgroundRegion;
-    public static ITextureRegion helpRegion;
 
     public static Font caviarDreams;
 
@@ -78,12 +75,12 @@ public class ResourcesManager {
     // --------------------------------------------------------------//
     // Variables for Game Scene
     // --------------------------------------------------------------//
-    private static List<BuildableBitmapTextureAtlas> atlases = new ArrayList<BuildableBitmapTextureAtlas>();
+    private static List<BuildableBitmapTextureAtlas> atlases = new ArrayList<>();
 
     // Tiles
     public static SparseArray<TextureRegion> tileRegions;
 
-    private static TexturePackTextureRegionLibrary mSpritesheetTexturePackTextureRegionLibrary;
+    private static TexturePackTextureRegionLibrary mSpriteSheetTexturePackTextureRegionLibrary;
     private static BuildableBitmapTextureAtlas mOnScreenControlTextureAtlas;
     private static BuildableBitmapTextureAtlas inventoryAtlas;
     private static BuildableBitmapTextureAtlas gameTextureAtlas;
@@ -145,13 +142,13 @@ public class ResourcesManager {
     // --------------------------------------------------------------//
     // Load Functions
     // --------------------------------------------------------------//
-    public static void loadMenuResources() {
+    static void loadMenuResources() {
         loadMenuGraphics();
         loadMenuFonts();
         loadMenuAudio();
     }
 
-    public static void loadGameResources() {
+    static void loadGameResources() {
         loadGameGraphics();
         loadGameFonts();
         loadGameAudio();
@@ -196,11 +193,11 @@ public class ResourcesManager {
         caviarDreams.load();
     }
 
-    public static void unloadMenuTextures() {
+    static void unloadMenuTextures() {
         menuTextureAtlas.unload();
     }
 
-    public static void loadMenuTextures() {
+    static void loadMenuTextures() {
         menuTextureAtlas.load();
     }
 
@@ -220,14 +217,14 @@ public class ResourcesManager {
             final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity.getTextureManager());
             final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/tiles/tiles.xml", "gfx/game/tiles/");
             spritesheetTexturePack.loadTexture();
-            mSpritesheetTexturePackTextureRegionLibrary = spritesheetTexturePack.getTexturePackTextureRegionLibrary();
+            mSpriteSheetTexturePackTextureRegionLibrary = spritesheetTexturePack.getTexturePackTextureRegionLibrary();
         } catch (final TexturePackParseException e) {
             Debug.e(e);
         }
         tileRegions = new SparseArray<>();
         try {
             for (int i = TileSpritesheet.MIN_INDEX; i <= TileSpritesheet.MAX_INDEX; i++) {
-                TextureRegion tempRegion = mSpritesheetTexturePackTextureRegionLibrary.get(i);
+                TextureRegion tempRegion = mSpriteSheetTexturePackTextureRegionLibrary.get(i);
                 tileRegions.put(i, tempRegion);
             }
         } catch (Exception e) {
@@ -310,7 +307,7 @@ public class ResourcesManager {
         }
     }
 
-    public static void unloadGameTextures() {
+    static void unloadGameTextures() {
         tileRegions.clear();
         for (BuildableBitmapTextureAtlas atlas : atlases)
             atlas.unload();
@@ -319,14 +316,14 @@ public class ResourcesManager {
     // --------------------------------------------------------------//
     // Load Splash
     // --------------------------------------------------------------//
-    public static void loadSplashScreen() {
+    static void loadSplashScreen() {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         splashTextureAtlas = new BitmapTextureAtlas(gameActivity.getTextureManager(), 256, 256, TextureOptions.DEFAULT);
         splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, gameActivity, "splash.png", 0, 0);
         splashTextureAtlas.load();
     }
 
-    public static void unloadSplashScreen() {
+    static void unloadSplashScreen() {
         splashTextureAtlas.unload();
         splash_region = null;
     }

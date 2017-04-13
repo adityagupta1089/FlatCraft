@@ -4,8 +4,6 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 
 public class CreativePlayer extends Player {
 
-	CreativePlayer player;
-	
 	public CreativePlayer(float pX, float pY, PhysicsWorld physicsWorld) {
 		super(pX, pY, physicsWorld);
 	}

@@ -1,8 +1,10 @@
 package scene;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
@@ -23,304 +25,316 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.adt.color.Color;
 import org.andengine.util.debug.Debug;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import base.BaseScene;
 import hud.FlatCraftHUD;
 import manager.ResourcesManager;
 import manager.SceneManager;
 import world.CreativeWorld;
+import world.MultiPlayerWorld;
+import world.SurvivalWorld;
 import world.World;
 
-public class GameScene extends BaseScene implements IOnSceneTouchListener {
-	// --------------------------------------------------------------//
-	// Variables
-	// --------------------------------------------------------------//
-	private FlatCraftHUD gameHUD;
-	private World world;
-	public PhysicsWorld physicsWorld;
+public class GameScene extends BaseScene implements IOnSceneTouchListener, GameModes {
+    // --------------------------------------------------------------//
+    // Variables
+    // --------------------------------------------------------------//
+    private FlatCraftHUD gameHUD;
+    private World world;
+    private PhysicsWorld physicsWorld;
 
-	private TiledSprite placeTilesYes;
-	private TiledSprite placeTilesNo;
+    private TiledSprite placeTilesYes;
+    private TiledSprite placeTilesNo;
 
-	private List<IEntity> entities;
+    private List<IEntity> entities;
 
-	// --------------------------------------------------------------//
-	// Class Logic
-	// --------------------------------------------------------------//
-	@Override
-	public void createScene() {
-		engine.getMusicManager().setMasterVolume(ResourcesManager.mfxVol);
-		engine.getSoundManager().setMasterVolume(ResourcesManager.sfxVol);
+    private static int mode;
 
-		entities = new LinkedList<>();
+    // --------------------------------------------------------------//
+    // Class Logic
+    // --------------------------------------------------------------//
+    @Override
+    public void createScene() {
+        engine.getMusicManager().setMasterVolume(ResourcesManager.mfxVol);
+        engine.getSoundManager().setMasterVolume(ResourcesManager.sfxVol);
 
-		createBackground();
-		createWorld();
-		createHUD();
-		createPhysics();
-		createAnalogOnScreenController();
+        entities = new LinkedList<>();
 
-		this.setOnSceneTouchListener(this);
+        createBackground();
+        createWorld();
+        createHUD();
+        createPhysics();
+        createAnalogOnScreenController();
 
-		createFPSCounter();
-	}
+        this.setOnSceneTouchListener(this);
 
-	private void createFPSCounter() {
-		final FPSCounter fpsCounter = new FPSCounter();
-		this.engine.registerUpdateHandler(fpsCounter);
-		final Text fpsText = new Text(250, 1000, ResourcesManager.caviarDreams, "FPS: XX.XX",
-				vertexBufferObjectManager);
+        createFPSCounter();
+    }
 
-		gameHUD.attachChild(fpsText);
+    private void createFPSCounter() {
+        final FPSCounter fpsCounter = new FPSCounter();
+        this.engine.registerUpdateHandler(fpsCounter);
+        final Text fpsText = new Text(250, 1000, ResourcesManager.caviarDreams, "FPS: XX.XX",
+                vertexBufferObjectManager);
 
-		gameHUD.registerUpdateHandler(new TimerHandler(1 / 20f, true, new ITimerCallback() {
-			@Override
-			public void onTimePassed(final TimerHandler pTimerHandler) {
-				fpsText.setText("FPS: " + String.format("%2.2f", fpsCounter.getFPS()));
-			}
-		}));
-	}
+        gameHUD.attachChild(fpsText);
 
-	@Override
-	public void onBackKeyPressed() {
-		ResourcesManager.buttonClickSound.play();
-		if (ResourcesManager.gameMusic.isPlaying()) {
-			ResourcesManager.menuMusic.pause();
-		}
-		SceneManager.loadMenuScene(engine);
-	}
+        gameHUD.registerUpdateHandler(new TimerHandler(1 / 20f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(final TimerHandler pTimerHandler) {
+                fpsText.setText("FPS: " + String.format("%2.2f", fpsCounter.getFPS()));
+            }
+        }));
+    }
 
-	protected void clearPhysicsWorld(PhysicsWorld physicsWorld) {
-		Iterator<Body> localIterator = physicsWorld.getBodies();
-		while (true) {
-			if (!localIterator.hasNext()) {
-				physicsWorld.clearForces();
-				physicsWorld.clearPhysicsConnectors();
-				physicsWorld.reset();
-				physicsWorld.dispose();
-				physicsWorld = null;
-				return;
-			}
-			try {
-				physicsWorld.destroyBody(localIterator.next());
-			} catch (Exception e) {
-				Debug.e(e);
-			}
-		}
-	}
+    @Override
+    public void onBackKeyPressed() {
+        ResourcesManager.buttonClickSound.play();
+        if (ResourcesManager.gameMusic.isPlaying()) {
+            ResourcesManager.menuMusic.pause();
+        }
+        SceneManager.loadMenuScene(engine);
+    }
 
-	@Override
-	public void attachChild(IEntity pEntity) throws IllegalStateException {
-		entities.add(pEntity);
-		super.attachChild(pEntity);
-	}
+    private void clearPhysicsWorld(PhysicsWorld physicsWorld) {
+        Iterator<Body> localIterator = physicsWorld.getBodies();
+        while (true) {
+            if (!localIterator.hasNext()) {
+                physicsWorld.clearForces();
+                physicsWorld.clearPhysicsConnectors();
+                physicsWorld.reset();
+                physicsWorld.dispose();
+                physicsWorld = null;
+                return;
+            }
+            try {
+                physicsWorld.destroyBody(localIterator.next());
+            } catch (Exception e) {
+                Debug.e(e);
+            }
+        }
+    }
 
-	public void cleanEntities() {
-		for (IEntity entity : entities) {
-			entity.clearEntityModifiers();
-			entity.clearUpdateHandlers();
-			entity.detachSelf();
+    @Override
+    public void attachChild(IEntity pEntity) throws IllegalStateException {
+        entities.add(pEntity);
+        super.attachChild(pEntity);
+    }
 
-			if (!entity.isDisposed()) {
-				entity.dispose();
-			}
-		}
+    private void cleanEntities() {
+        for (IEntity entity : entities) {
+            entity.clearEntityModifiers();
+            entity.clearUpdateHandlers();
+            entity.detachSelf();
 
-		entities.clear();
-		entities = null;
-	}
+            if (!entity.isDisposed()) {
+                entity.dispose();
+            }
+        }
 
-	public void clearScene() {
-		engine.runOnUpdateThread(new Runnable() {
-			@Override
-			public void run() {
-				clearPhysicsWorld(physicsWorld);
-				cleanEntities();
-				clearTouchAreas();
-				clearUpdateHandlers();
-				System.gc();
-			}
-		});
-	}
+        entities.clear();
+        entities = null;
+    }
 
-	@Override
-	public void disposeScene() {
-		if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
-		camera.setHUD(null);
-		camera.setChaseEntity(null);
-		camera.setCenter(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
-		clearScene();
-	}
+    private void clearScene() {
+        engine.runOnUpdateThread(new Runnable() {
+            @Override
+            public void run() {
+                clearPhysicsWorld(physicsWorld);
+                cleanEntities();
+                clearTouchAreas();
+                clearUpdateHandlers();
+                System.gc();
+            }
+        });
+    }
 
-	// --------------------------------------------------------------//
-	// Helper Functions
-	// --------------------------------------------------------------//
-	private void createBackground() {
-		setBackground(new Background(Color.BLUE));
-	}
+    @Override
+    public void disposeScene() {
+        if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
+        camera.setHUD(null);
+        camera.setChaseEntity(null);
+        camera.setCenter(ResourcesManager.WIDTH / 2, ResourcesManager.HEIGHT / 2);
+        clearScene();
+    }
 
-	private void createHUD() {
-		gameHUD = new FlatCraftHUD();
-		ResourcesManager.hud = gameHUD;
-		camera.setHUD(gameHUD);
-		gameHUD.initTiles();
-	}
+    // --------------------------------------------------------------//
+    // Helper Functions
+    // --------------------------------------------------------------//
+    private void createBackground() {
+        setBackground(new Background(Color.BLUE));
+    }
 
-	private void createWorld() {
-		world = new CreativeWorld(camera);
-		ResourcesManager.world = world;
-		attachChild(world);
-	}
+    private void createHUD() {
+        gameHUD = new FlatCraftHUD();
+        ResourcesManager.hud = gameHUD;
+        camera.setHUD(gameHUD);
+        gameHUD.initTiles();
+    }
 
-	private void createPhysics() {
-		physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0f, -17f), false);
-		registerUpdateHandler(physicsWorld);
-	}
+    private void createWorld() {
+        if (mode == MODE_SINGLE_CREATIVE)
+            world = new CreativeWorld(camera);
+        else if (mode == MODE_MULTI_PLAYER)
+            world = new MultiPlayerWorld(camera);
+        else if (mode == MODE_SINGLE_SURVIVAL)
+            world = new SurvivalWorld(camera);
+        ResourcesManager.world = world;
+        attachChild(world);
+    }
 
-	private void createAnalogOnScreenController() {
-		final AnalogOnScreenControl analogOnScreenControl = new AnalogOnScreenControl(200, 200,
-				camera, ResourcesManager.mOnScreenControlBaseTextureRegion,
-				ResourcesManager.mOnScreenControlKnobTextureRegion, 0.1f, 200,
-				vertexBufferObjectManager, new IAnalogOnScreenControlListener() {
-					@Override
-					public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl,
-							final float pValueX, final float pValueY) {
-						world.player.setVelocityDirection(pValueX, pValueY);
-					}
+    private void createPhysics() {
+        physicsWorld = new FixedStepPhysicsWorld(60, new Vector2(0f, -17f), false);
+        registerUpdateHandler(physicsWorld);
+    }
 
-					@Override
-					public void onControlClick(AnalogOnScreenControl pAnalogOnScreenControl) {
+    private void createAnalogOnScreenController() {
+        final AnalogOnScreenControl analogOnScreenControl = new AnalogOnScreenControl(200, 200,
+                camera, ResourcesManager.mOnScreenControlBaseTextureRegion,
+                ResourcesManager.mOnScreenControlKnobTextureRegion, 0.1f, 200,
+                vertexBufferObjectManager, new IAnalogOnScreenControlListener() {
+            @Override
+            public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl,
+                                        final float pValueX, final float pValueY) {
+                world.player.setVelocityDirection(pValueX, pValueY);
+            }
 
-					}
-				});
-		final Sprite controlBase = analogOnScreenControl.getControlBase();
-		controlBase.setOffsetCenter(0, 0);
-		controlBase.setScale(3f);
-		analogOnScreenControl.getControlKnob().setAlpha(0.1f);
-		setChildScene(analogOnScreenControl);
+            @Override
+            public void onControlClick(AnalogOnScreenControl pAnalogOnScreenControl) {
 
-		placeTilesYes = new TiledSprite(1700, 180, ResourcesManager.placeTilesYesRegion,
-				vertexBufferObjectManager) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					ResourcesManager.buttonClickSound.play();
-					world.setPlaceMode(World.MODE_PLACE_TILES);
-					setMode(World.MODE_PLACE_TILES);
-					return true;
-				}
-				return false;
-			}
+            }
+        });
+        final Sprite controlBase = analogOnScreenControl.getControlBase();
+        controlBase.setOffsetCenter(0, 0);
+        controlBase.setScale(3f);
+        analogOnScreenControl.getControlKnob().setAlpha(0.1f);
+        setChildScene(analogOnScreenControl);
 
-		};
-		placeTilesYes.setCurrentTileIndex(1);
+        placeTilesYes = new TiledSprite(1700, 180, ResourcesManager.placeTilesYesRegion,
+                vertexBufferObjectManager) {
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
+                                         float pTouchAreaLocalY) {
+                if (pSceneTouchEvent.isActionUp()) {
+                    ResourcesManager.buttonClickSound.play();
+                    world.setPlaceMode(World.MODE_PLACE_TILES);
+                    setTilePlacementMode(World.MODE_PLACE_TILES);
+                    return true;
+                }
+                return false;
+            }
 
-		placeTilesNo = new TiledSprite(1700, 380, ResourcesManager.placeTilesNoRegion,
-				vertexBufferObjectManager) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					ResourcesManager.buttonClickSound.play();
-					world.setPlaceMode(World.MODE_DELETE_TILES);
-					setMode(World.MODE_DELETE_TILES);
-					return true;
-				}
-				return false;
-			}
-		};
-		TiledSprite soundSprite = new TiledSprite(1500, 900, ResourcesManager.soundRegion,
-				vertexBufferObjectManager) {
+        };
+        placeTilesYes.setCurrentTileIndex(1);
 
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					ResourcesManager.buttonClickSound.play();
-					this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
-					if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
-					else ResourcesManager.gameMusic.play();
-					return true;
-				}
-				return false;
-			}
-		};
+        placeTilesNo = new TiledSprite(1700, 380, ResourcesManager.placeTilesNoRegion,
+                vertexBufferObjectManager) {
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
+                                         float pTouchAreaLocalY) {
+                if (pSceneTouchEvent.isActionUp()) {
+                    ResourcesManager.buttonClickSound.play();
+                    world.setPlaceMode(World.MODE_DELETE_TILES);
+                    setTilePlacementMode(World.MODE_DELETE_TILES);
+                    return true;
+                }
+                return false;
+            }
+        };
+        TiledSprite soundSprite = new TiledSprite(1500, 900, ResourcesManager.soundRegion,
+                vertexBufferObjectManager) {
 
-		Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion,
-				vertexBufferObjectManager) {
-			@Override
-			public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-					float pTouchAreaLocalY) {
-				if (pSceneTouchEvent.isActionUp()) {
-					ResourcesManager.buttonClickSound.play();
-					ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									switch (which) {
-										case DialogInterface.BUTTON_POSITIVE:
-											onBackKeyPressed();
-											break;
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
+                                         float pTouchAreaLocalY) {
+                if (pSceneTouchEvent.isActionUp()) {
+                    ResourcesManager.buttonClickSound.play();
+                    this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
+                    if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
+                    else ResourcesManager.gameMusic.play();
+                    return true;
+                }
+                return false;
+            }
+        };
 
-										case DialogInterface.BUTTON_NEGATIVE:
-											ResourcesManager.buttonClickSound.play();
-											break;
-									}
-								}
-							};
-							AlertDialog.Builder builder = new AlertDialog.Builder(
-									ResourcesManager.gameActivity);
-							builder.setMessage("Are you sure?")
-									.setPositiveButton("Yes", dialogClickListener)
-									.setNegativeButton("No", dialogClickListener).show();
-						}
-					});
+        Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion,
+                vertexBufferObjectManager) {
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
+                                         float pTouchAreaLocalY) {
+                if (pSceneTouchEvent.isActionUp()) {
+                    ResourcesManager.buttonClickSound.play();
+                    ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case DialogInterface.BUTTON_POSITIVE:
+                                            onBackKeyPressed();
+                                            break;
 
-					return true;
-				}
-				return false;
-			}
-		};
+                                        case DialogInterface.BUTTON_NEGATIVE:
+                                            ResourcesManager.buttonClickSound.play();
+                                            break;
+                                    }
+                                }
+                            };
+                            AlertDialog.Builder builder = new AlertDialog.Builder(
+                                    ResourcesManager.gameActivity);
+                            builder.setMessage("Are you sure?")
+                                    .setPositiveButton("Yes", dialogClickListener)
+                                    .setNegativeButton("No", dialogClickListener).show();
+                        }
+                    });
 
-		placeTilesYes.setScale(1.5f);
-		placeTilesNo.setScale(1.5f);
+                    return true;
+                }
+                return false;
+            }
+        };
 
-		soundSprite.setScale(1.5f * 88f / 100f);
+        placeTilesYes.setScale(1.5f);
+        placeTilesNo.setScale(1.5f);
 
-		menuSprite.setScale(1.5f * 88f / 100f);
+        soundSprite.setScale(1.5f * 88f / 100f);
 
-		gameHUD.attachChild(placeTilesYes);
-		gameHUD.attachChild(placeTilesNo);
-		gameHUD.attachChild(soundSprite);
+        menuSprite.setScale(1.5f * 88f / 100f);
 
-		gameHUD.attachChild(menuSprite);
+        gameHUD.attachChild(placeTilesYes);
+        gameHUD.attachChild(placeTilesNo);
+        gameHUD.attachChild(soundSprite);
 
-		gameHUD.registerTouchArea(placeTilesYes);
-		gameHUD.registerTouchArea(placeTilesNo);
-		gameHUD.registerTouchArea(soundSprite);
+        gameHUD.attachChild(menuSprite);
 
-		gameHUD.registerTouchArea(menuSprite);
-	}
+        gameHUD.registerTouchArea(placeTilesYes);
+        gameHUD.registerTouchArea(placeTilesNo);
+        gameHUD.registerTouchArea(soundSprite);
 
-	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		return world.onSceneTouchEvent(pScene, pSceneTouchEvent);
-	}
+        gameHUD.registerTouchArea(menuSprite);
+    }
 
-	private void setMode(int modePlaceTiles) {
-		if (modePlaceTiles == World.MODE_PLACE_TILES) {
-			placeTilesYes.setCurrentTileIndex(1);
-			placeTilesNo.setCurrentTileIndex(0);
-		} else if (modePlaceTiles == World.MODE_DELETE_TILES) {
-			placeTilesYes.setCurrentTileIndex(0);
-			placeTilesNo.setCurrentTileIndex(1);
-		}
-	}
+    @Override
+    public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+        return world.onSceneTouchEvent(pScene, pSceneTouchEvent);
+    }
+
+    private void setTilePlacementMode(int modePlaceTiles) {
+        if (modePlaceTiles == World.MODE_PLACE_TILES) {
+            placeTilesYes.setCurrentTileIndex(1);
+            placeTilesNo.setCurrentTileIndex(0);
+        } else if (modePlaceTiles == World.MODE_DELETE_TILES) {
+            placeTilesYes.setCurrentTileIndex(0);
+            placeTilesNo.setCurrentTileIndex(1);
+        }
+    }
+
+    public static void setGameMode(int pmode) {
+        mode = pmode;
+    }
 }

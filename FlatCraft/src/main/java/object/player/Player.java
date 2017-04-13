@@ -13,7 +13,7 @@ import object.tile.Tile;
 
 public abstract class Player extends Sprite {
 
-	protected Body playerBody;
+	Body playerBody;
 
 	private static final int PLAYER_BORDER = 5;
 

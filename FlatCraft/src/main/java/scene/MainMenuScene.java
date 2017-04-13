@@ -29,11 +29,13 @@ import csp203.flatcraft.R;
 import manager.ResourcesManager;
 import manager.SceneManager;
 
-public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener, VolumePreferences {
+public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener, VolumePreferences, GameModes {
 
     private MenuScene menuChildScene;
     private MenuScene creditsChildScene;
     private MenuScene helpChildScene;
+    private MenuScene playerSelectionMenuScene;
+    private MenuScene modeSelectionMenuScene;
 
     private final int MENU_PLAY = 0;
     private final int MENU_OPTIONS = MENU_PLAY + 1;
@@ -44,6 +46,14 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
     private final int OPTIONS_BACK = MENU_EXIT + 1;
     private final int HELP_BACK = OPTIONS_BACK + 1;
     private final int CREDITS_BACK = HELP_BACK + 1;
+
+    private final int MENU_SINGLE_PLAYER = CREDITS_BACK + 1;
+    private final int MENU_MULTI_PLAYER = MENU_SINGLE_PLAYER + 1;
+    private final int MENU_PLAYER_SELECTION_BACK = MENU_MULTI_PLAYER + 1;
+
+    private final int MENU_CREATIVE_MODE = MENU_PLAYER_SELECTION_BACK + 1;
+    private final int MENU_SURVIVAL_MODE = MENU_CREATIVE_MODE + 1;
+    private final int MENU_MODE_BACK = MENU_SURVIVAL_MODE + 1;
 
     private static final int SPACING = 150;
 
@@ -63,15 +73,15 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
         menuChildScene.setPosition(0, -110);
 
         final IMenuItem playMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_PLAY,
-                ResourcesManager.caviarDreams, "PLAY", vertexBufferObjectManager), 1.2f, 1);
+                ResourcesManager.caviarDreams, "Play", vertexBufferObjectManager), 1.2f, 1);
         final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_OPTIONS,
-                ResourcesManager.caviarDreams, "OPTIONS", vertexBufferObjectManager), 1.2f, 1);
+                ResourcesManager.caviarDreams, "Options", vertexBufferObjectManager), 1.2f, 1);
         final IMenuItem creditsMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_CREDITS,
-                ResourcesManager.caviarDreams, "CREDITS", vertexBufferObjectManager), 1.2f, 1);
+                ResourcesManager.caviarDreams, "Credits", vertexBufferObjectManager), 1.2f, 1);
         final IMenuItem helpMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_HELP,
-                ResourcesManager.caviarDreams, "HELP", vertexBufferObjectManager), 1.2f, 1);
+                ResourcesManager.caviarDreams, "Help", vertexBufferObjectManager), 1.2f, 1);
         final IMenuItem exitMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_EXIT,
-                ResourcesManager.caviarDreams, "EXIT", vertexBufferObjectManager), 1.2f, 1);
+                ResourcesManager.caviarDreams, "Exit", vertexBufferObjectManager), 1.2f, 1);
 
         menuChildScene.addMenuItem(playMenuItem);
         menuChildScene.addMenuItem(optionsMenuItem);
@@ -91,6 +101,52 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
         menuChildScene.setOnMenuItemClickListener(this);
 
         setChildScene(menuChildScene);
+    }
+
+    private void createPlayerSelectionMenuScene() {
+        playerSelectionMenuScene = new MenuScene(camera);
+        playerSelectionMenuScene.setPosition(0, 0);
+        final IMenuItem singlePlayerMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_SINGLE_PLAYER,
+                ResourcesManager.caviarDreams, "Single Player", vertexBufferObjectManager), 1.2f, 1);
+        final IMenuItem multiPlayerMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_MULTI_PLAYER,
+                ResourcesManager.caviarDreams, "Multi Player", vertexBufferObjectManager), 1.2f, 1);
+        final IMenuItem backMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_PLAYER_SELECTION_BACK,
+                ResourcesManager.caviarDreams, "Back", vertexBufferObjectManager), 1.2f, 1);
+
+        playerSelectionMenuScene.addMenuItem(singlePlayerMenuItem);
+        playerSelectionMenuScene.addMenuItem(multiPlayerMenuItem);
+        playerSelectionMenuScene.addMenuItem(backMenuItem);
+
+        playerSelectionMenuScene.buildAnimations();
+        playerSelectionMenuScene.setBackgroundEnabled(false);
+
+        playerSelectionMenuScene.setOnMenuItemClickListener(this);
+
+        detachChild(menuChildScene);
+        setChildScene(playerSelectionMenuScene);
+    }
+
+    private void createModeSelectionMenu() {
+        modeSelectionMenuScene = new MenuScene(camera);
+        modeSelectionMenuScene.setPosition(0, 0);
+        final IMenuItem creativeMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_CREATIVE_MODE,
+                ResourcesManager.caviarDreams, "Creative Mode", vertexBufferObjectManager), 1.2f, 1);
+        final IMenuItem survivalMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_SURVIVAL_MODE,
+                ResourcesManager.caviarDreams, "Survival Mode", vertexBufferObjectManager), 1.2f, 1);
+        final IMenuItem backMenuItem = new ScaleMenuItemDecorator(new TextMenuItem(MENU_MODE_BACK,
+                ResourcesManager.caviarDreams, "Back", vertexBufferObjectManager), 1.2f, 1);
+
+        modeSelectionMenuScene.addMenuItem(creativeMenuItem);
+        modeSelectionMenuScene.addMenuItem(survivalMenuItem);
+        modeSelectionMenuScene.addMenuItem(backMenuItem);
+
+        modeSelectionMenuScene.buildAnimations();
+        modeSelectionMenuScene.setBackgroundEnabled(false);
+
+        modeSelectionMenuScene.setOnMenuItemClickListener(this);
+
+        detachChild(playerSelectionMenuScene);
+        setChildScene(modeSelectionMenuScene);
     }
 
     private void createHelpMenuScene() {
@@ -149,7 +205,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        ResourcesManager.mfxVol = seekBar.getProgress()/100f;
+                        ResourcesManager.mfxVol = seekBar.getProgress() / 100f;
                     }
                 });
                 final SeekBar sfxSeekBar = (SeekBar) dialogView.findViewById(R.id.seekBar2);
@@ -166,7 +222,7 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
-                        ResourcesManager.sfxVol = seekBar.getProgress()/100f;
+                        ResourcesManager.sfxVol = seekBar.getProgress() / 100f;
                     }
                 });
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -297,31 +353,25 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
 
     public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem,
                                      float pMenuItemLocalX, float pMenuItemLocalY) {
+        ResourcesManager.buttonClickSound.play();
         switch (pMenuItem.getID()) {
             case MENU_PLAY:
-                ResourcesManager.buttonClickSound.play();
-                if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
-                SceneManager.loadGameScene(engine);
+                createPlayerSelectionMenuScene();
                 return true;
             case MENU_CREDITS:
-                ResourcesManager.buttonClickSound.play();
                 createCreditsMenuScene();
                 return true;
             case MENU_OPTIONS:
-                ResourcesManager.buttonClickSound.play();
                 createOptionsMenuScene();
                 return true;
             case MENU_HELP:
-                ResourcesManager.buttonClickSound.play();
                 createHelpMenuScene();
                 return true;
             case MENU_EXIT:
-                ResourcesManager.buttonClickSound.play();
                 if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
                 System.exit(0);
                 return true;
             case HELP_BACK:
-                ResourcesManager.buttonClickSound.play();
                 helpChildScene.dispose();
                 helpChildScene.detachSelf();
                 ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
@@ -333,7 +383,6 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
                 setChildScene(menuChildScene);
                 return true;
             case CREDITS_BACK:
-                ResourcesManager.buttonClickSound.play();
                 creditsChildScene.dispose();
                 creditsChildScene.detachSelf();
                 ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
@@ -344,10 +393,36 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
                 });
                 setChildScene(menuChildScene);
                 return true;
+            case MENU_SINGLE_PLAYER:
+                createModeSelectionMenu();
+                return true;
+            case MENU_MULTI_PLAYER:
+                if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
+                SceneManager.loadGameScene(engine, MODE_MULTI_PLAYER);
+                return true;
+            case MENU_PLAYER_SELECTION_BACK:
+                playerSelectionMenuScene.dispose();
+                playerSelectionMenuScene.detachSelf();
+                setChildScene(menuChildScene);
+                return true;
+            case MENU_CREATIVE_MODE:
+                if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
+                SceneManager.loadGameScene(engine, MODE_SINGLE_CREATIVE);
+                return true;
+            case MENU_SURVIVAL_MODE:
+                if (ResourcesManager.menuMusic.isPlaying()) ResourcesManager.menuMusic.pause();
+                SceneManager.loadGameScene(engine, MODE_SINGLE_SURVIVAL);
+                return true;
+            case MENU_MODE_BACK:
+                modeSelectionMenuScene.dispose();
+                modeSelectionMenuScene.detachSelf();
+                setChildScene(playerSelectionMenuScene);
+                return true;
             default:
                 return false;
         }
     }
+
 
     @Override
     public void onBackKeyPressed() {

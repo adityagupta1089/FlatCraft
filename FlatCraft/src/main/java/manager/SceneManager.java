@@ -15,11 +15,11 @@ public class SceneManager {
 	// --------------------------------------------------------------//
 	// Scenes
 	// --------------------------------------------------------------//
-	public static BaseScene currentScene;
-	public static GameScene gameScene;
-	public static SplashScene splashScene;
-	public static MainMenuScene menuScene;
-	public static LoadingScene loadingScene;
+	private static BaseScene currentScene;
+	private static GameScene gameScene;
+	private static SplashScene splashScene;
+	private static MainMenuScene menuScene;
+	private static LoadingScene loadingScene;
 
 	// --------------------------------------------------------------//
 	// Class Logic
@@ -60,7 +60,7 @@ public class SceneManager {
 	// --------------------------------------------------------------//
 	// Menu Scene <-> Game Scene
 	// --------------------------------------------------------------//
-	public static void loadGameScene(final Engine mEngine) {
+	public static void loadGameScene(final Engine mEngine, final int mode) {
 		setScene(loadingScene);
 		ResourcesManager.unloadMenuTextures();
 		mEngine.registerUpdateHandler(new TimerHandler(0.1f, new ITimerCallback() {
@@ -68,6 +68,7 @@ public class SceneManager {
 				mEngine.unregisterUpdateHandler(pTimerHandler);
 				ResourcesManager.loadGameResources();
 				ResourcesManager.gameMusic.play();
+				GameScene.setGameMode(mode);
 				gameScene = new GameScene();
 				setScene(gameScene);
 			}

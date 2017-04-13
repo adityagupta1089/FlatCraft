@@ -19,8 +19,8 @@ public class FlatCraftHUD extends HUD {
 
 	public FlatCraftHUD() {
 		super();
-		entities = new ArrayList<IEntity>();
-		quickAccess = new ArrayList<InventoryItem>();
+		entities = new ArrayList<>();
+		quickAccess = new ArrayList<>();
 		ResourcesManager.world.onPopulateQuickAccess(quickAccess);
 	}
 
@@ -59,7 +59,7 @@ public class FlatCraftHUD extends HUD {
 		entities.add(pEntity);
 	}
 
-	public void cleanEntities() {
+	private void cleanEntities() {
 		for (IEntity entity : entities) {
 			entity.clearEntityModifiers();
 			entity.clearUpdateHandlers();

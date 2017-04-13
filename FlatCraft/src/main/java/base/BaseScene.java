@@ -14,7 +14,7 @@ public abstract class BaseScene extends Scene {
 	// --------------------------------------------------------------//
 	protected VertexBufferObjectManager vertexBufferObjectManager;
 	public BoundCamera camera;
-	GameActivity gameActivity;
+	protected GameActivity gameActivity;
 	protected Engine engine;
 
 	// --------------------------------------------------------------//

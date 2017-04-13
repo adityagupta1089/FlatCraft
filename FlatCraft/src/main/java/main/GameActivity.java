@@ -2,7 +2,6 @@ package main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import org.andengine.engine.Engine;
