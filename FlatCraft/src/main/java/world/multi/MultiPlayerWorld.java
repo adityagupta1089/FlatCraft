@@ -22,6 +22,7 @@ import org.andengine.extension.multiplayer.adt.message.server.IServerMessage;
 import org.andengine.extension.multiplayer.client.IServerMessageHandler;
 import org.andengine.extension.multiplayer.client.connector.ServerConnector;
 import org.andengine.extension.multiplayer.client.connector.SocketConnectionServerConnector;
+import org.andengine.extension.multiplayer.server.IClientMessageHandler;
 import org.andengine.extension.multiplayer.server.SocketServer;
 import org.andengine.extension.multiplayer.server.connector.ClientConnector;
 import org.andengine.extension.multiplayer.server.connector.SocketConnectionClientConnector;
@@ -311,36 +312,45 @@ public class MultiPlayerWorld extends World implements CreativeConstants,
             @Override
             protected SocketConnectionClientConnector newClientConnector(final SocketConnection
                                                                                  pSocketConnection) throws IOException {
-                return new SocketConnectionClientConnector(pSocketConnection);
+                SocketConnectionClientConnector mClientConnector = new
+                        SocketConnectionClientConnector(pSocketConnection);
+                mClientConnector.registerClientMessage(FLAG_MESSAGE_ADD_SPRITE,
+                        AddSpriteMessage.class, new IClientMessageHandler<SocketConnection>() {
+                            @Override
+                            public void onHandleMessage(ClientConnector<SocketConnection>
+                                                                pClientConnector,
+                                                        IClientMessage pClientMessage) throws
+                                    IOException {
+                                final AddSpriteMessage addSpriteMessage =
+                                        (AddSpriteMessage) pClientMessage;
+                                ResourcesManager.gameActivity.toastOnUiThread("Client: Add " +
+                                        "sprite: " + addSpriteMessage.mX + ", " +
+                                        addSpriteMessage.mY);
+                                createTile(addSpriteMessage.mX, addSpriteMessage.mY,
+                                        addSpriteMessage
+                                                .mType);
+                            }
+                        });
+
+                mClientConnector.registerClientMessage(FLAG_MESSAGE_DELETE_SPRITE,
+                        DeleteSpriteMessage.class, new IClientMessageHandler<SocketConnection>() {
+                            @Override
+                            public void onHandleMessage(final ClientConnector<SocketConnection>
+                                                                pClientConnector, final
+                                                        IClientMessage
+                                                                pClientMessage) throws IOException {
+                                final DeleteSpriteMessage deleteSpriteMessage =
+                                        (DeleteSpriteMessage) pClientMessage;
+                                ResourcesManager.gameActivity.toastOnUiThread("Client: Delete " +
+                                        "sprite: " + deleteSpriteMessage.mX + ", " +
+                                        deleteSpriteMessage.mY);
+                                deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
+                            }
+                        });
+                return mClientConnector;
             }
         };
 
-        /*this.mClientConnector = new SocketConnectionClientConnector(new SocketConnection())
-        this.mClientConnector.registerClientMessage(FLAG_MESSAGE_ADD_SPRITE,
-                AddSpriteMessage.class, new IClientMessageHandler<SocketConnection>() {
-                    @Override
-                    public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector,
-                                                IClientMessage pClientMessage) throws IOException {
-                        final AddSpriteMessage addSpriteMessage =
-                                (AddSpriteMessage) pClientMessage;
-                        createTile(addSpriteMessage.mX, addSpriteMessage.mY, addSpriteMessage
-                                .mType);
-                    }
-                });
-
-        this.mClientConnector.registerClientMessage(FLAG_MESSAGE_DELETE_SPRITE,
-                DeleteSpriteMessage.class, new IClientMessageHandler<SocketConnection>() {
-                    @Override
-                    public void onHandleMessage(final ClientConnector<SocketConnection>
-                                                        pClientConnector, final IClientMessage
-                                                        pClientMessage) throws IOException {
-                        final DeleteSpriteMessage deleteSpriteMessage =
-                                (DeleteSpriteMessage) pClientMessage;
-                        deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
-                    }
-                });
-
-        this.mClientConnector.getConnection().start();*/
 
         this.mSocketServer.start();
     }
@@ -372,6 +382,9 @@ public class MultiPlayerWorld extends World implements CreativeConstants,
                                                             pServerMessage) throws IOException {
                             final AddSpriteMessage addSpriteMessage =
                                     (AddSpriteMessage) pServerMessage;
+                            ResourcesManager.gameActivity.toastOnUiThread("Server: Add " +
+                                    "sprite: " + addSpriteMessage.mX + ", " +
+                                    addSpriteMessage.mY);
                             createTile(addSpriteMessage.mX, addSpriteMessage.mY, addSpriteMessage
                                     .mType);
                         }
@@ -385,6 +398,9 @@ public class MultiPlayerWorld extends World implements CreativeConstants,
                                                             pServerMessage) throws IOException {
                             final DeleteSpriteMessage deleteSpriteMessage =
                                     (DeleteSpriteMessage) pServerMessage;
+                            ResourcesManager.gameActivity.toastOnUiThread("Server: Delete " +
+                                    "sprite: " + deleteSpriteMessage.mX + ", " +
+                                    deleteSpriteMessage.mY);
                             deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
                         }
                     });
@@ -431,15 +447,21 @@ public class MultiPlayerWorld extends World implements CreativeConstants,
     }
 
     public void exit() {
-        if (this.mSocketServer != null) {
-            this.mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT,
-                    new ConnectionCloseServerMessage());
-            this.mSocketServer.terminate();
-        }
+        ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mSocketServer != null) {
+                    mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT,
+                            new ConnectionCloseServerMessage());
+                    mSocketServer.terminate();
+                }
 
-        if (this.mServerConnector != null) {
-            this.mServerConnector.terminate();
-        }
+                if (mServerConnector != null) {
+                    mServerConnector.terminate();
+                }
+            }
+        });
+
     }
 
     // ===========================================================
