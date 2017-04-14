@@ -24,4 +24,5 @@ dependencies {
     compile project(':AndEnginePhysicsBox2DExtension')
     compile project(':AndEngineMultiplayerExtension')
     compile project(':AndEngineTexturePackerExtension')
+    compile project(':andenginetmxtiledmapextension')
 }

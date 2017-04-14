@@ -1,4 +1,4 @@
-include ':AndEngine'
+include ':AndEngine', ':andenginetmxtiledmapextension'
 include ':AndEngineMultiplayerExtension'
 include ':AndEnginePhysicsBox2DExtension'
 include ':AndEngineTexturePackerExtension'

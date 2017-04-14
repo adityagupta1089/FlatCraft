@@ -2,6 +2,7 @@ package main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 import android.view.KeyEvent;
 
 import org.andengine.engine.Engine;
@@ -25,6 +26,12 @@ public class GameActivity extends BaseGameActivity implements VolumePreferences 
 
     @Override
     public EngineOptions onCreateEngineOptions() {
+        StrictMode.ThreadPolicy policy = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+            policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
+
         camera = new BoundCamera(0, 0, ResourcesManager.WIDTH, ResourcesManager.HEIGHT);
         EngineOptions engineoptions = new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
                 new RatioResolutionPolicy(ResourcesManager.WIDTH, ResourcesManager.HEIGHT),

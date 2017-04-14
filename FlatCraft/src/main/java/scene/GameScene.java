@@ -7,7 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
-import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
+import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl
+        .IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
@@ -34,10 +35,10 @@ import hud.FlatCraftHUD;
 import manager.ResourcesManager;
 import manager.SceneManager;
 import scene.constants.GameModes;
-import world.single.CreativeWorld;
-import world.multi.MultiPlayerConstants;
-import world.single.SurvivalWorld;
 import world.World;
+import world.multi.MultiPlayerWorld;
+import world.single.CreativeWorld;
+import world.single.SurvivalWorld;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener, GameModes {
     // --------------------------------------------------------------//
@@ -94,6 +95,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     @Override
     public void onBackKeyPressed() {
         ResourcesManager.buttonClickSound.play();
+        if (mode == MODE_MULTI_PLAYER) {
+            ((MultiPlayerWorld) world).exit();
+        }
         if (ResourcesManager.gameMusic.isPlaying()) {
             ResourcesManager.menuMusic.pause();
         }
@@ -180,7 +184,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         if (mode == MODE_SINGLE_CREATIVE)
             world = new CreativeWorld(camera);
         else if (mode == MODE_MULTI_PLAYER)
-            world = new MultiPlayerConstants(camera);
+            world = new MultiPlayerWorld(camera);
         else if (mode == MODE_SINGLE_SURVIVAL)
             world = new SurvivalWorld(camera);
         ResourcesManager.world = world;
@@ -272,7 +276,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
                     ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            DialogInterface.OnClickListener dialogClickListener = new
+                                    DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
