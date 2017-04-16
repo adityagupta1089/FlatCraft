@@ -105,6 +105,9 @@ public class ResourcesManager {
 
     // Player
     public static ITextureRegion playerRegion;
+    public static ITextureRegion player2Region;
+    public static ITextureRegion player3Region;
+    public static ITextureRegion player4Region;
 
     // Inventory
     public static TextureRegion inventoryBaseRegion;
@@ -160,7 +163,8 @@ public class ResourcesManager {
     private static void loadMenuGraphics() {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
         menuTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048, TextureOptions.DEFAULT);
-        menuBackgroundRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity, "menu_background.png");
+        menuBackgroundRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas, gameActivity,
+                "menu_background.png");
         try {
             menuTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
             menuTextureAtlas.load();
@@ -188,8 +192,10 @@ public class ResourcesManager {
 
     private static void loadMenuFonts() {
         FontFactory.setAssetBasePath("font/");
-        final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-        caviarDreams = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(), "CaviarDreams.ttf", 100, true, Color.BLACK);
+        final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions
+                .BILINEAR_PREMULTIPLYALPHA);
+        caviarDreams = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(),
+                "CaviarDreams.ttf", 100, true, Color.BLACK);
         caviarDreams.load();
     }
 
@@ -214,8 +220,10 @@ public class ResourcesManager {
 
     private static void loadTileGraphics() {
         try {
-            final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity.getTextureManager());
-            final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/tiles/tiles.xml", "gfx/game/tiles/");
+            final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity
+                    .getTextureManager());
+            final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/tiles/tiles.xml",
+                    "gfx/game/tiles/");
             spritesheetTexturePack.loadTexture();
             mSpriteSheetTexturePackTextureRegionLibrary = spritesheetTexturePack.getTexturePackTextureRegionLibrary();
         } catch (final TexturePackParseException e) {
@@ -234,22 +242,29 @@ public class ResourcesManager {
 
     private static void loadBackgroundGraphics() {
         try {
-            final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity.getTextureManager());
-            final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/background/background.xml", "gfx/game/background/");
+            final TexturePackLoader texturePackLoader = new TexturePackLoader(gameActivity.getAssets(), gameActivity
+                    .getTextureManager());
+            final TexturePack spritesheetTexturePack = texturePackLoader.loadFromAsset("gfx/game/background/background.xml",
+                    "gfx/game/background/");
             spritesheetTexturePack.loadTexture();
             mBackgroundSpritesheetTexturePackTextureRegionLibrary = spritesheetTexturePack.getTexturePackTextureRegionLibrary();
         } catch (final TexturePackParseException e) {
             Debug.e(e);
         }
         skyBoxBottomRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet.SKYBOX_BOTTOM_ID);
-        skyBoxSideHillsRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet.SKYBOX_SIDEHILLS_ID);
+        skyBoxSideHillsRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet
+                .SKYBOX_SIDEHILLS_ID);
         skyBoxTopRegion = mBackgroundSpritesheetTexturePackTextureRegionLibrary.get(BackgroundSpritesheet.SKYBOX_TOP_ID);
     }
 
     private static void loadPlayerGraphics() {
-        gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048, TextureOptions.REPEATING_NEAREST);
+        gameTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 2048, 2048, TextureOptions
+                .REPEATING_NEAREST);
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/characters/");
         playerRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player.png");
+        player2Region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player2.png");
+        player3Region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player3.png");
+        player4Region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player4.png");
         try {
             gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
             gameTextureAtlas.load();
@@ -260,16 +275,24 @@ public class ResourcesManager {
     }
 
     private static void loadAnalogOnScreenController() {
-        mOnScreenControlTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 512, 512, TextureOptions.DEFAULT);
+        mOnScreenControlTextureAtlas = new BuildableBitmapTextureAtlas(gameActivity.getTextureManager(), 512, 512,
+                TextureOptions.DEFAULT);
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/controller/");
-        mOnScreenControlBaseTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_base.png");
-        mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_knob.png");
-        placeTilesYesRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "yes.png", 2, 1);
-        placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "no.png", 2, 1);
-        menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "menu.png");
-        soundRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity, "sound.png", 2, 1);
+        mOnScreenControlBaseTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset
+                (mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_base.png");
+        mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset
+                (mOnScreenControlTextureAtlas, gameActivity, "onscreen_control_knob.png");
+        placeTilesYesRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas,
+                gameActivity, "yes.png", 2, 1);
+        placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas,
+                gameActivity, "no.png", 2, 1);
+        menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "menu" +
+                ".png");
+        soundRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity,
+                "sound.png", 2, 1);
         try {
-            mOnScreenControlTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+            mOnScreenControlTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>
+                    (0, 1, 0));
             mOnScreenControlTextureAtlas.load();
             atlases.add(mOnScreenControlTextureAtlas);
         } catch (final TextureAtlasBuilderException e) {
@@ -293,8 +316,10 @@ public class ResourcesManager {
 
     private static void loadGameFonts() {
         FontFactory.setAssetBasePath("font/");
-        final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-        caviarDreamsGame = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(), "CaviarDreams.ttf", 50, true, Color.WHITE);
+        final ITexture fontTexture = new BitmapTextureAtlas(gameActivity.getTextureManager(), 1024, 1024, TextureOptions
+                .BILINEAR_PREMULTIPLYALPHA);
+        caviarDreamsGame = FontFactory.createFromAsset(gameActivity.getFontManager(), fontTexture, gameActivity.getAssets(),
+                "CaviarDreams.ttf", 50, true, Color.WHITE);
         caviarDreamsGame.load();
     }
 
@@ -319,7 +344,8 @@ public class ResourcesManager {
     static void loadSplashScreen() {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
         splashTextureAtlas = new BitmapTextureAtlas(gameActivity.getTextureManager(), 256, 256, TextureOptions.DEFAULT);
-        splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, gameActivity, "splash.png", 0, 0);
+        splash_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTextureAtlas, gameActivity, "splash.png",
+                0, 0);
         splashTextureAtlas.load();
     }
 
