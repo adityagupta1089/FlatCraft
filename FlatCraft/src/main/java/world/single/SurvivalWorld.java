@@ -27,13 +27,11 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     private static final float PLAYER_STOP_EPSILON = 1f;
 
-    SurvivalPlayer player;
-
     public SurvivalWorld(BoundCamera camera) {
         super(camera);
         camera.setBounds(0, 0, GRID_WIDTH * Tile.TILE_EDGE, GRID_HEIGHT * Tile.TILE_EDGE);
         camera.setBoundsEnabled(true);
-        player.setStopEpsilon(PLAYER_STOP_EPSILON);
+        ((SurvivalPlayer) player).setStopEpsilon(PLAYER_STOP_EPSILON);
     }
 
     @Override
@@ -114,18 +112,11 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
                     if (ResourcesManager.hud.currItem.take()) {
                         createTile(blockX, blockY, ResourcesManager.hud.currItem.mTileType);
                         return true;
-                    } else {
-                        return false;
                     }
-                } else {
-                    return false;
                 }
-            } else {
-                return false;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override

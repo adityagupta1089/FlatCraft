@@ -4,6 +4,7 @@ import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.input.touch.TouchEvent;
 
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -30,4 +31,5 @@ public abstract class Player extends Sprite {
 	public void setLinearDamping(float f) {
 		playerBody.setLinearDamping(f);
 	}
+
 }

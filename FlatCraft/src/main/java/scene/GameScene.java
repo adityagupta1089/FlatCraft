@@ -198,8 +198,11 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
             @Override
             public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float
                     pValueY) {
-                if (mode != MODE_MULTI_PLAYER) world.player.setVelocityDirection(pValueX, pValueY);
-                else ((MultiPlayerWorld) world).setPlayerVelocityDirection(pValueX, pValueY);
+                if (mode != MODE_MULTI_PLAYER) {
+                        world.player.setVelocityDirection(pValueX, pValueY);
+                } else {
+                    ((MultiPlayerWorld) world).setPlayerVelocityDirection(pValueX, pValueY);
+                }
             }
 
             @Override

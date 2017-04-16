@@ -5,39 +5,46 @@
     density="xxhdpi"
     format="8"
     plugin-version="2.2.3"
-    timestamp="3405024313943"
+    timestamp="2588562192348"
     token="-3822735340179292037"
     verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="282" />
+        duration="293" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="24" />
+        duration="10" />
     <task
         name="verifier"
-        duration="1" />
+        duration="0" />
 
     <artifact
-        location="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/5/slice_1/classes.dex"
+        location="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/5/slice_0/classes.dex"
         type="DEX" />
 
     <build
-        timestamp="3290734708444"
+        timestamp="804510181747"
         verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/outputs/apk/FlatCraft-debug.apk"
             type="MAIN" />
     </build>
     <build
-        timestamp="3405024313943"
+        timestamp="1525895176199"
         verifier="COLD_SWAP_REQUESTED" >
         <artifact
-            location="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/5/slice_1/classes.dex"
+            location="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/5/slice_3/classes.dex"
+            type="DEX" />
+    </build>
+    <build
+        timestamp="2588562192348"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/5/slice_0/classes.dex"
             type="DEX" />
     </build>
 
