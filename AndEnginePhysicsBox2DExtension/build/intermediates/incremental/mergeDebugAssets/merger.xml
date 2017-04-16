@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/aditya/AndroidStudioProjects/FlatCraft/AndEnginePhysicsBox2DExtension/src/main/assets"/><source path="/home/aditya/AndroidStudioProjects/FlatCraft/AndEnginePhysicsBox2DExtension/build/generated/assets/shaders/debug"/></dataSet><dataSet config="debug"><source path="/home/aditya/AndroidStudioProjects/FlatCraft/AndEnginePhysicsBox2DExtension/src/debug/assets"/></dataSet></merger>

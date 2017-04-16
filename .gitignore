@@ -36,7 +36,7 @@ import-summary.txt
 .project
 .metadata
 .gradle
-build/**
+**/build/**
 bin/**
 tmp/**
 tmp/**/*

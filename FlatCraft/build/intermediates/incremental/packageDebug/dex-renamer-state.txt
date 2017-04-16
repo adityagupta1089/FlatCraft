@@ -1,7 +1,0 @@
-#Sun Apr 16 15:08:04 IST 2017
-base.0=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_e6a25000c6f0d18dff71d666cd752c5d4be43712
-renamed.1=classes2.dex
-renamed.0=classes.dex
-file.1=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_8125cc31249181a47a9e5ab6647928b778769700/classes.dex
-base.1=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_8125cc31249181a47a9e5ab6647928b778769700
-file.0=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_e6a25000c6f0d18dff71d666cd752c5d4be43712/classes.dex
