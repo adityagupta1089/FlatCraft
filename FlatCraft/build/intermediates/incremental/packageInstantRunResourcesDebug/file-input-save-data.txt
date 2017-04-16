@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Sun Apr 16 13:32:41 IST 2017
+#Sun Apr 16 15:07:56 IST 2017
 5.base=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/assets/debug
 42.base=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/assets/debug
 32.set=ASSET

@@ -32,7 +32,6 @@ ADDED from /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/src/main/Andro
 MERGED from [FlatCraft:AndEnginePhysicsBox2DExtension:unspecified] /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/exploded-aar/FlatCraft/AndEnginePhysicsBox2DExtension/unspecified/AndroidManifest.xml:7:5-9:40
 MERGED from [FlatCraft:AndEngineMultiplayerExtension:unspecified] /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/exploded-aar/FlatCraft/AndEngineMultiplayerExtension/unspecified/AndroidManifest.xml:7:5-9:40
 MERGED from [FlatCraft:AndEngineTexturePackerExtension:unspecified] /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/exploded-aar/FlatCraft/AndEngineTexturePackerExtension/unspecified/AndroidManifest.xml:7:5-9:40
-MERGED from [FlatCraft:andenginetmxtiledmapextension:unspecified] /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/exploded-aar/FlatCraft/andenginetmxtiledmapextension/unspecified/AndroidManifest.xml:7:5-9:41
 MERGED from [FlatCraft:AndEngine:unspecified] /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/exploded-aar/FlatCraft/AndEngine/unspecified/AndroidManifest.xml:7:5-9:40
 	android:targetSdkVersion
 		ADDED from /home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/src/main/AndroidManifest.xml:13:9-38

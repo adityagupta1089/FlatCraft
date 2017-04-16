@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Sun Apr 16 13:33:17 IST 2017
+#Sun Apr 16 15:08:04 IST 2017
 76.base=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/assets/debug
 5.base=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/transforms/mergeJniLibs/debug/folders/2000/1f/main
 42.base=/home/aditya/AndroidStudioProjects/FlatCraft/FlatCraft/build/intermediates/assets/debug

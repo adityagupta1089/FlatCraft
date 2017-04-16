@@ -27,6 +27,7 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     private static final float PLAYER_STOP_EPSILON = 1f;
 
+
     public SurvivalWorld(BoundCamera camera) {
         super(camera);
         camera.setBounds(0, 0, GRID_WIDTH * Tile.TILE_EDGE, GRID_HEIGHT * Tile.TILE_EDGE);
