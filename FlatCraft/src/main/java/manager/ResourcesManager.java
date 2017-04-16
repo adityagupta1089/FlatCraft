@@ -103,11 +103,15 @@ public class ResourcesManager {
 
     public static ITiledTextureRegion soundRegion;
 
-    // Player
+    // Player & Monsters
     public static ITextureRegion playerRegion;
     public static ITextureRegion player2Region;
     public static ITextureRegion player3Region;
     public static ITextureRegion player4Region;
+
+    public static ITiledTextureRegion survivalPlayer;
+    public static ITiledTextureRegion enemy_walking;
+    public static ITiledTextureRegion enemy_flying;
 
     // Inventory
     public static TextureRegion inventoryBaseRegion;
@@ -265,6 +269,12 @@ public class ResourcesManager {
         player2Region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player2.png");
         player3Region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player3.png");
         player4Region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas, gameActivity, "player4.png");
+        survivalPlayer = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, gameActivity,
+                "survival_player.png", 7, 1);
+        enemy_flying = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, gameActivity,
+                "enemy_flying.png", 4, 1);
+        enemy_walking = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, gameActivity,
+                "enemy_walking.png", 4, 1);
         try {
             gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
             gameTextureAtlas.load();
@@ -286,8 +296,8 @@ public class ResourcesManager {
                 gameActivity, "yes.png", 2, 1);
         placeTilesNoRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas,
                 gameActivity, "no.png", 2, 1);
-        menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "menu" +
-                ".png");
+        menuRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mOnScreenControlTextureAtlas, gameActivity, "menu"
+                + ".png");
         soundRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mOnScreenControlTextureAtlas, gameActivity,
                 "sound.png", 2, 1);
         try {
