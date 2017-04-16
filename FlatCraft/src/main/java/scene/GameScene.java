@@ -7,8 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
-import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl
-        .IAnalogOnScreenControlListener;
+import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
@@ -79,8 +78,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     private void createFPSCounter() {
         final FPSCounter fpsCounter = new FPSCounter();
         this.engine.registerUpdateHandler(fpsCounter);
-        final Text fpsText = new Text(250, 1000, ResourcesManager.caviarDreams, "FPS: XX.XX",
-                vertexBufferObjectManager);
+        final Text fpsText = new Text(250, 1000, ResourcesManager.caviarDreams, "FPS: XX.XX", vertexBufferObjectManager);
 
         gameHUD.attachChild(fpsText);
 
@@ -181,12 +179,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     }
 
     private void createWorld() {
-        if (mode == MODE_SINGLE_CREATIVE)
-            world = new CreativeWorld(camera);
-        else if (mode == MODE_MULTI_PLAYER)
-            world = new MultiPlayerWorld(camera);
-        else if (mode == MODE_SINGLE_SURVIVAL)
-            world = new SurvivalWorld(camera);
+        if (mode == MODE_SINGLE_CREATIVE) world = new CreativeWorld(camera);
+        else if (mode == MODE_MULTI_PLAYER) world = new MultiPlayerWorld(camera);
+        else if (mode == MODE_SINGLE_SURVIVAL) world = new SurvivalWorld(camera);
         ResourcesManager.world = world;
         attachChild(world);
     }
@@ -197,14 +192,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     }
 
     private void createAnalogOnScreenController() {
-        final AnalogOnScreenControl analogOnScreenControl = new AnalogOnScreenControl(200, 200,
-                camera, ResourcesManager.mOnScreenControlBaseTextureRegion,
-                ResourcesManager.mOnScreenControlKnobTextureRegion, 0.1f, 200,
+        final AnalogOnScreenControl analogOnScreenControl = new AnalogOnScreenControl(200, 200, camera, ResourcesManager
+                .mOnScreenControlBaseTextureRegion, ResourcesManager.mOnScreenControlKnobTextureRegion, 0.1f, 200,
                 vertexBufferObjectManager, new IAnalogOnScreenControlListener() {
             @Override
-            public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl,
-                                        final float pValueX, final float pValueY) {
-                world.player.setVelocityDirection(pValueX, pValueY);
+            public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float
+                    pValueY) {
+                if (mode != MODE_MULTI_PLAYER) world.player.setVelocityDirection(pValueX, pValueY);
+                else ((MultiPlayerWorld) world).setPlayerVelocityDirection(pValueX, pValueY);
             }
 
             @Override
@@ -218,11 +213,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         analogOnScreenControl.getControlKnob().setAlpha(0.1f);
         setChildScene(analogOnScreenControl);
 
-        placeTilesYes = new TiledSprite(1700, 180, ResourcesManager.placeTilesYesRegion,
-                vertexBufferObjectManager) {
+        placeTilesYes = new TiledSprite(1700, 180, ResourcesManager.placeTilesYesRegion, vertexBufferObjectManager) {
             @Override
-            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-                                         float pTouchAreaLocalY) {
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     world.setPlaceMode(World.MODE_PLACE_TILES);
@@ -235,11 +228,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         };
         placeTilesYes.setCurrentTileIndex(1);
 
-        placeTilesNo = new TiledSprite(1700, 380, ResourcesManager.placeTilesNoRegion,
-                vertexBufferObjectManager) {
+        placeTilesNo = new TiledSprite(1700, 380, ResourcesManager.placeTilesNoRegion, vertexBufferObjectManager) {
             @Override
-            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-                                         float pTouchAreaLocalY) {
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     world.setPlaceMode(World.MODE_DELETE_TILES);
@@ -249,12 +240,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
                 return false;
             }
         };
-        TiledSprite soundSprite = new TiledSprite(1500, 900, ResourcesManager.soundRegion,
-                vertexBufferObjectManager) {
+        TiledSprite soundSprite = new TiledSprite(1500, 900, ResourcesManager.soundRegion, vertexBufferObjectManager) {
 
             @Override
-            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-                                         float pTouchAreaLocalY) {
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
@@ -266,18 +255,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
             }
         };
 
-        Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion,
-                vertexBufferObjectManager) {
+        Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion, vertexBufferObjectManager) {
             @Override
-            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
-                                         float pTouchAreaLocalY) {
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            DialogInterface.OnClickListener dialogClickListener = new
-                                    DialogInterface.OnClickListener() {
+                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
@@ -291,11 +277,9 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
                                     }
                                 }
                             };
-                            AlertDialog.Builder builder = new AlertDialog.Builder(
-                                    ResourcesManager.gameActivity);
-                            builder.setMessage("Are you sure?")
-                                    .setPositiveButton("Yes", dialogClickListener)
-                                    .setNegativeButton("No", dialogClickListener).show();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ResourcesManager.gameActivity);
+                            builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener).setNegativeButton
+                                    ("No", dialogClickListener).show();
                         }
                     });
 

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.widget.EditText;
 
@@ -50,6 +49,7 @@ import hud.InventoryItem;
 import manager.ResourcesManager;
 import manager.SceneManager;
 import object.player.CreativePlayer;
+import object.player.Player;
 import object.tile.Tile;
 import spritesheet.TileSpritesheet;
 import world.World;
@@ -69,9 +69,8 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
 
     private static final short FLAG_MESSAGE_ADD_SPRITE = 1;
     private static final short FLAG_MESSAGE_DELETE_SPRITE = FLAG_MESSAGE_ADD_SPRITE + 1;
-    private static final short FLAG_MESSAGE_MOVE_PLAYER = FLAG_MESSAGE_DELETE_SPRITE + 1;
-    private static final short FLAG_MESSAGE_REQUEST_PLAYER = FLAG_MESSAGE_MOVE_PLAYER + 1;
-    private static final short FLAG_MESSAGE_GRANT_PLAYER = FLAG_MESSAGE_REQUEST_PLAYER + 1;
+    private static final short FLAG_MESSAGE_SET_PLAYER_VELOCITY = FLAG_MESSAGE_DELETE_SPRITE + 1;
+    private static final short FLAG_MESSAGE_GRANT_PLAYER = FLAG_MESSAGE_SET_PLAYER_VELOCITY + 1;
 
     private static final int DIALOG_CHOOSE_SERVER_OR_CLIENT_ID = 0;
     private static final int DIALOG_ENTER_SERVER_IP_ID = DIALOG_CHOOSE_SERVER_OR_CLIENT_ID + 1;
@@ -82,7 +81,8 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
     // ===========================================================
 
     private int mPlayerIDCounter = 0;
-    private final SparseArray<CreativePlayer> mPlayers = new SparseArray<>();
+    private int thisPlayerID = -1;
+    private final SparseArray<Player> mPlayers = new SparseArray<>();
 
     private String mServerIP = LOCALHOST_IP;
     private SocketServer<SocketConnectionClientConnector> mSocketServer;
@@ -100,24 +100,13 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
         camera.setBoundsEnabled(true);
         initMessagePool();
         showDialog(DIALOG_CHOOSE_SERVER_OR_CLIENT_ID);
-        if (mSocketServer != null) {
-            createPlayer(camera, mPlayerIDCounter++);
-            player.setLinearDamping(PLAYER_DAMPING);
-        } else {
-            requestPlayer();
-        }
-    }
-
-    private void requestPlayer() {
-        mServerConnector.sendClientMessage(ClientConnector.PRIORITY_DEFAULT, new RequestPlayerMessage());
     }
 
     private void initMessagePool() {
         mMessagePool.registerMessage(FLAG_MESSAGE_ADD_SPRITE, AddSpriteMessage.class);
         mMessagePool.registerMessage(FLAG_MESSAGE_DELETE_SPRITE, DeleteSpriteMessage.class);
-        mMessagePool.registerMessage(FLAG_MESSAGE_MOVE_PLAYER, MovePlayerMessage.class);
-        mMessagePool.registerMessage(FLAG_MESSAGE_REQUEST_PLAYER, DeleteSpriteMessage.class);
-        mMessagePool.registerMessage(FLAG_MESSAGE_GRANT_PLAYER, DeleteSpriteMessage.class);
+        mMessagePool.registerMessage(FLAG_MESSAGE_SET_PLAYER_VELOCITY, SetPlayerVelocityMessage.class);
+        mMessagePool.registerMessage(FLAG_MESSAGE_GRANT_PLAYER, GrantPlayerMessage.class);
     }
 
     // ===========================================================
@@ -125,23 +114,7 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
     // ===========================================================
     @Override
     public void createPlayer(Camera camera) {
-        /* Nothing to do here */
-    }
 
-    private void createPlayer(Camera camera, int id) {
-        //TODO send broadcast for first player
-       /*TODO override setposition to send a client message to server to be propagated to all other clients to move the
-         player, note that all clients will receive that message and will then move its player but must not send another
-         chain message to move the player again */
-        CreativePlayer multiCreativePlayer = new CreativePlayer(new Random().nextInt(GRID_WIDTH) * Tile.TILE_EDGE, (DIRT_WIDTH
-                + 1) * Tile.TILE_EDGE, physicsWorld);
-        multiCreativePlayer.setPosition(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2);
-        camera.setCenter(multiCreativePlayer.getX(), multiCreativePlayer.getY());
-        camera.setChaseEntity(multiCreativePlayer);
-        this.attachChild(multiCreativePlayer);
-        entities.add(multiCreativePlayer);
-        multiCreativePlayer.setUserData(id);
-        mPlayers.append(id, multiCreativePlayer);
     }
 
     @Override
@@ -276,15 +249,15 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
                         new AlertDialog.Builder(ResourcesManager.gameActivity).setIcon(android.R.drawable.ic_dialog_info)
                                 .setTitle("Enter Server-IP ...").setCancelable(false).setView(ipEditText).setPositiveButton
                                 ("Connect", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(final DialogInterface pDialog, final int pWhich) {
+                                        mServerIP = ipEditText.getText().toString();
+                                        initClient();
+                                    }
+                                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface pDialog, final int pWhich) {
-                                mServerIP = ipEditText.getText().toString();
-                                initClient();
-                            }
-                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface pDialog, final int pWhich) {
-                                Log.d("Multi", "Finishing");
+                                SceneManager.getCurrentScene().onBackKeyPressed();
                             }
                         }).show();
                         break;
@@ -292,15 +265,17 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
                         new AlertDialog.Builder(ResourcesManager.gameActivity).setIcon(android.R.drawable.ic_dialog_info)
                                 .setTitle("Be Server or Client ...").setCancelable(false).setPositiveButton("Client", new
                                 DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface pDialog, final int pWhich) {
-                                showDialog(DIALOG_ENTER_SERVER_IP_ID);
-                            }
-                        }).setNegativeButton("Server", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(final DialogInterface pDialog, final int pWhich) {
+                                        showDialog(DIALOG_ENTER_SERVER_IP_ID);
+                                    }
+                                }).setNegativeButton("Server", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(final DialogInterface pDialog, final int pWhich) {
                                 initServer();
                                 showDialog(DIALOG_SHOW_SERVER_IP_ID);
+                                createOwnPlayer(camera);
+                                mPlayerIDCounter++;
                             }
                         }).show();
                         break;
@@ -310,7 +285,6 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
     }
 
     private void initServer() {
-        ResourcesManager.gameActivity.toastOnUiThread("Multi : Initializing Server");
         this.mSocketServer = new SocketServer<SocketConnectionClientConnector>(SERVER_PORT, new ClientConnectorListener(), new
                 ServerStateListener()) {
             @Override
@@ -319,50 +293,39 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
                 SocketConnectionClientConnector mClientConnector = new SocketConnectionClientConnector(pSocketConnection);
                 mClientConnector.registerClientMessage(FLAG_MESSAGE_ADD_SPRITE, AddSpriteMessage.class, new
                         IClientMessageHandler<SocketConnection>() {
-                    @Override
-                    public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage
-                            pClientMessage) throws IOException {
-                        final AddSpriteMessage addSpriteMessage = (AddSpriteMessage) pClientMessage;
-                        createTile(addSpriteMessage.mX, addSpriteMessage.mY, addSpriteMessage.mType);
-                        mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, (IServerMessage)
-                                pClientMessage);
-                    }
-                });
+                            @Override
+                            public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage
+                                    pClientMessage) throws IOException {
+                                final AddSpriteMessage addSpriteMessage = (AddSpriteMessage) pClientMessage;
+                                createTile(addSpriteMessage.mX, addSpriteMessage.mY, addSpriteMessage.mType);
+                                mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, addSpriteMessage);
+                            }
+                        });
 
                 mClientConnector.registerClientMessage(FLAG_MESSAGE_DELETE_SPRITE, DeleteSpriteMessage.class, new
                         IClientMessageHandler<SocketConnection>() {
-                    @Override
-                    public void onHandleMessage(final ClientConnector<SocketConnection> pClientConnector, final IClientMessage
-                            pClientMessage) throws IOException {
-                        final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) pClientMessage;
-                        deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
-                        mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, (IServerMessage)
-                                pClientMessage);
-                    }
-                });
-                mClientConnector.registerClientMessage(FLAG_MESSAGE_MOVE_PLAYER, MovePlayerMessage.class, new
+                            @Override
+                            public void onHandleMessage(final ClientConnector<SocketConnection> pClientConnector, final
+                            IClientMessage
+                                    pClientMessage) throws IOException {
+                                final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) pClientMessage;
+                                deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
+                                mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, deleteSpriteMessage);
+                            }
+                        });
+                mClientConnector.registerClientMessage(FLAG_MESSAGE_SET_PLAYER_VELOCITY, SetPlayerVelocityMessage.class, new
                         IClientMessageHandler<SocketConnection>() {
-                    @Override
-                    public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage
-                            pClientMessage) throws IOException {
-                        final MovePlayerMessage movePlayerMessage = (MovePlayerMessage) pClientMessage;
-                        mPlayers.get(movePlayerMessage.mID).setPosition(movePlayerMessage.mX, movePlayerMessage.mY);
-                        mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, (IServerMessage)
-                                pClientMessage);
-                    }
-                });
-
-                mClientConnector.registerClientMessage(FLAG_MESSAGE_REQUEST_PLAYER, RequestPlayerMessage.class, new
-                        IClientMessageHandler<SocketConnection>() {
-                    @Override
-                    public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage
-                            pClientMessage) throws IOException {
-                        createPlayer(camera, mPlayerIDCounter++);
-                        GrantPlayerMessage grantPlayerMessage = new GrantPlayerMessage(mPlayerIDCounter, mPlayers.get
-                                (mPlayerIDCounter).getX(), mPlayers.get(mPlayerIDCounter).getY());
-                        mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, grantPlayerMessage);
-                    }
-                });
+                            @Override
+                            public void onHandleMessage(ClientConnector<SocketConnection> pClientConnector, IClientMessage
+                                    pClientMessage) throws IOException {
+                                final SetPlayerVelocityMessage setPlayerVelocityMessage = (SetPlayerVelocityMessage)
+                                        pClientMessage;
+                                mPlayers.get(setPlayerVelocityMessage.mID).setVelocityDirection(setPlayerVelocityMessage.vX,
+                                        setPlayerVelocityMessage.vY);
+                                mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT,
+                                        setPlayerVelocityMessage);
+                            }
+                        });
                 return mClientConnector;
             }
         };
@@ -372,7 +335,6 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
     }
 
     private void initClient() {
-        ResourcesManager.gameActivity.toastOnUiThread("Multi : Initializing Client");
         try {
             this.mServerConnector = new SocketConnectionServerConnector(new SocketConnection(new Socket(this.mServerIP,
                     SERVER_PORT)), new ServerConnectorListener());
@@ -388,47 +350,52 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
 
             this.mServerConnector.registerServerMessage(FLAG_MESSAGE_ADD_SPRITE, AddSpriteMessage.class, new
                     IServerMessageHandler<SocketConnection>() {
-                @Override
-                public void onHandleMessage(final ServerConnector<SocketConnection> pServerConnector, final IServerMessage
-                        pServerMessage) throws IOException {
-                    final AddSpriteMessage addSpriteMessage = (AddSpriteMessage) pServerMessage;
-                    createTile(addSpriteMessage.mX, addSpriteMessage.mY, addSpriteMessage.mType);
-                }
-            });
+                        @Override
+                        public void onHandleMessage(final ServerConnector<SocketConnection> pServerConnector, final IServerMessage
+                                pServerMessage) throws IOException {
+                            final AddSpriteMessage addSpriteMessage = (AddSpriteMessage) pServerMessage;
+                            createTile(addSpriteMessage.mX, addSpriteMessage.mY, addSpriteMessage.mType);
+                        }
+                    });
 
             this.mServerConnector.registerServerMessage(FLAG_MESSAGE_DELETE_SPRITE, DeleteSpriteMessage.class, new
                     IServerMessageHandler<SocketConnection>() {
-                @Override
-                public void onHandleMessage(final ServerConnector<SocketConnection> pServerConnector, final IServerMessage
-                        pServerMessage) throws IOException {
-                    final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) pServerMessage;
-                    deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
-                }
-            });
+                        @Override
+                        public void onHandleMessage(final ServerConnector<SocketConnection> pServerConnector, final IServerMessage
+                                pServerMessage) throws IOException {
+                            final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) pServerMessage;
+                            deleteTile(deleteSpriteMessage.mX, deleteSpriteMessage.mY);
+                        }
+                    });
 
-            this.mServerConnector.registerServerMessage(FLAG_MESSAGE_MOVE_PLAYER, MovePlayerMessage.class, new
+            this.mServerConnector.registerServerMessage(FLAG_MESSAGE_SET_PLAYER_VELOCITY, SetPlayerVelocityMessage.class, new
                     IServerMessageHandler<SocketConnection>() {
-                @Override
-                public void onHandleMessage(ServerConnector<SocketConnection> pServerConnector, IServerMessage pServerMessage)
-                        throws IOException {
-                    final MovePlayerMessage movePlayerMessage = (MovePlayerMessage) pServerMessage;
-                    mPlayers.get(movePlayerMessage.mID).setPosition(movePlayerMessage.mX, movePlayerMessage.mY);
-                }
-            });
+                        @Override
+                        public void onHandleMessage(ServerConnector<SocketConnection> pServerConnector, IServerMessage
+                                pServerMessage)
+                                throws IOException {
+                            final SetPlayerVelocityMessage setPlayerVelocityMessage = (SetPlayerVelocityMessage) pServerMessage;
+                            mPlayers.get(setPlayerVelocityMessage.mID).setVelocityDirection(setPlayerVelocityMessage.vX,
+                                    setPlayerVelocityMessage.vY);
+                        }
+                    });
+
             this.mServerConnector.registerServerMessage(FLAG_MESSAGE_GRANT_PLAYER, GrantPlayerMessage.class, new
                     IServerMessageHandler<SocketConnection>() {
-                @Override
-                public void onHandleMessage(ServerConnector<SocketConnection> pServerConnector, IServerMessage pServerMessage)
-                        throws IOException {
-                    final GrantPlayerMessage grantPlayerMessage = (GrantPlayerMessage) pServerMessage;
-                    createPlayer(camera, grantPlayerMessage.mID);
-                    mPlayers.get(grantPlayerMessage.mID).setPosition(grantPlayerMessage.mX, grantPlayerMessage.mY);
-                }
-            });
+                        @Override
+                        public void onHandleMessage(ServerConnector<SocketConnection> pServerConnector, IServerMessage
+                                pServerMessage)
+                                throws IOException {
+                            final GrantPlayerMessage grantPlayerMessage = (GrantPlayerMessage) pServerMessage;
+                            createMessagePlayer(camera, grantPlayerMessage);
+                        }
+                    });
 
             this.mServerConnector.getConnection().start();
         } catch (final Throwable t) {
             Debug.e(t);
+            ResourcesManager.gameActivity.toastOnUiThread("Couldn't connect");
+            SceneManager.getCurrentScene().onBackKeyPressed();
         }
     }
 
@@ -462,21 +429,58 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
     }
 
     public void exit() {
-        ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mSocketServer != null) {
-                    mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, new ConnectionCloseServerMessage
-                            ());
-                    mSocketServer.terminate();
-                }
+        if (mSocketServer != null) {
+            mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, new ConnectionCloseServerMessage());
+            mSocketServer.terminate();
+        } else if (mServerConnector != null) {
+            mServerConnector.terminate();
+        }
+    }
 
-                if (mServerConnector != null) {
-                    mServerConnector.terminate();
-                }
-            }
-        });
+    public void setPlayerVelocityDirection(float pValueX, float pValueY) {
+        SetPlayerVelocityMessage setPlayerVelocityMessage = new SetPlayerVelocityMessage(thisPlayerID, pValueX, pValueY);
+        if (this.mSocketServer != null) {
+            if (player != null)
+                player.setVelocityDirection(pValueX, pValueY);
+            this.mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, setPlayerVelocityMessage);
+        } else if (this.mServerConnector != null) {
+            this.mServerConnector.sendClientMessage(ClientConnector.PRIORITY_DEFAULT, setPlayerVelocityMessage);
+        }
+    }
 
+    private void createOwnPlayer(Camera camera) {
+        ResourcesManager.gameActivity.toastOnUiThread("Created player with id " + mPlayerIDCounter);
+        player = new CreativePlayer(new Random().nextInt(GRID_WIDTH) * Tile.TILE_EDGE, (DIRT_WIDTH + 1) * Tile.TILE_EDGE,
+                physicsWorld);
+        thisPlayerID = mPlayerIDCounter;
+        player.setPosition(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2);
+        camera.setCenter(player.getX(), player.getY());
+        camera.setChaseEntity(player);
+        this.attachChild(player);
+        entities.add(player);
+        mPlayers.append(thisPlayerID, player);
+
+        player.setLinearDamping(PLAYER_DAMPING);
+    }
+
+    private void createMessagePlayer(Camera camera, GrantPlayerMessage message) {
+        ResourcesManager.gameActivity.toastOnUiThread("Created player with id " + message.mID);
+        CreativePlayer multiCreativePlayer = new CreativePlayer(message.mX, message.mY, physicsWorld);
+        if (thisPlayerID == -1) {
+            thisPlayerID = message.mID;
+            this.player = multiCreativePlayer;
+        }
+        multiCreativePlayer.setPosition(multiCreativePlayer.getX() + multiCreativePlayer.getWidth() / 2, multiCreativePlayer
+                .getY() + multiCreativePlayer.getHeight() / 2);
+        if (thisPlayerID == message.mID) {
+            camera.setCenter(multiCreativePlayer.getX(), multiCreativePlayer.getY());
+            camera.setChaseEntity(multiCreativePlayer);
+        }
+        this.attachChild(multiCreativePlayer);
+        entities.add(multiCreativePlayer);
+        mPlayers.append(message.mID, multiCreativePlayer);
+
+        multiCreativePlayer.setLinearDamping(PLAYER_DAMPING);
     }
 
     // ===========================================================
@@ -557,59 +561,43 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
         }
     }
 
-    public static class MovePlayerMessage extends Message implements IServerMessage, IClientMessage {
+    public static class SetPlayerVelocityMessage extends Message implements IServerMessage, IClientMessage {
         private int mID;
-        private int mX;
-        private int mY;
+        private float vX;
+        private float vY;
 
-        public MovePlayerMessage() {
+        public SetPlayerVelocityMessage() {
         }
 
-        public MovePlayerMessage(final int pID, final int pX, final int pY) {
+        public SetPlayerVelocityMessage(final int pID, final float pX, final float pY) {
             this.mID = pID;
-            this.mX = pX;
-            this.mY = pY;
+            this.vX = pX;
+            this.vY = pY;
         }
 
-        public void set(final int pID, final int pX, final int pY) {
+        public void set(final int pID, final float pX, final float pY) {
             this.mID = pID;
-            this.mX = pX;
-            this.mY = pY;
+            this.vX = pX;
+            this.vY = pY;
         }
 
         @Override
         public short getFlag() {
-            return FLAG_MESSAGE_MOVE_PLAYER;
+            return FLAG_MESSAGE_SET_PLAYER_VELOCITY;
         }
 
         @Override
         protected void onReadTransmissionData(final DataInputStream pDataInputStream) throws IOException {
             this.mID = pDataInputStream.readInt();
-            this.mX = pDataInputStream.readInt();
-            this.mY = pDataInputStream.readInt();
+            this.vX = pDataInputStream.readFloat();
+            this.vY = pDataInputStream.readFloat();
         }
 
         @Override
         protected void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
-            pDataOutputStream.write(this.mID);
-            pDataOutputStream.writeInt(this.mX);
-            pDataOutputStream.writeInt(this.mY);
-        }
-    }
-
-    public static class RequestPlayerMessage extends Message implements IClientMessage {
-
-        @Override
-        protected void onReadTransmissionData(DataInputStream pDataInputStream) throws IOException {
-        }
-
-        @Override
-        protected void onWriteTransmissionData(DataOutputStream pDataOutputStream) throws IOException {
-        }
-
-        @Override
-        public short getFlag() {
-            return FLAG_MESSAGE_REQUEST_PLAYER;
+            pDataOutputStream.writeInt(this.mID);
+            pDataOutputStream.writeFloat(this.vX);
+            pDataOutputStream.writeFloat(this.vY);
         }
     }
 
@@ -647,7 +635,7 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
 
         @Override
         protected void onWriteTransmissionData(final DataOutputStream pDataOutputStream) throws IOException {
-            pDataOutputStream.write(this.mID);
+            pDataOutputStream.writeInt(this.mID);
             pDataOutputStream.writeFloat(this.mX);
             pDataOutputStream.writeFloat(this.mY);
         }
@@ -680,7 +668,6 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
         @Override
         public void onException(final SocketServer<SocketConnectionClientConnector> pSocketServer, final Throwable pThrowable) {
             Debug.e(pThrowable);
-            ResourcesManager.gameActivity.toastOnUiThread("SERVER: Exception: " + pThrowable);
         }
     }
 
@@ -689,6 +676,21 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
         public void onStarted(final ClientConnector<SocketConnection> pConnector) {
             ResourcesManager.gameActivity.toastOnUiThread("SERVER: Client connected: " + pConnector.getConnection().getSocket()
                     .getInetAddress().getHostAddress());
+            final GrantPlayerMessage grantPlayerMessage = new GrantPlayerMessage(mPlayerIDCounter, new Random().nextInt
+                    (GRID_WIDTH) * Tile.TILE_EDGE, (DIRT_WIDTH + 1) * Tile.TILE_EDGE);
+            createMessagePlayer(camera, grantPlayerMessage);
+            mPlayerIDCounter++;
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    /* Grant a player to client */
+                    mSocketServer.sendBroadcastServerMessage(ClientConnector.PRIORITY_DEFAULT, grantPlayerMessage);
+                    /* Grant server's player */
+                    pConnector.sendServerMessage(ClientConnector.PRIORITY_DEFAULT, new GrantPlayerMessage(thisPlayerID, player.
+                            getX(), player.getY()));
+                }
+            });
+            t.start();
         }
 
         @Override
@@ -696,5 +698,6 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
             ResourcesManager.gameActivity.toastOnUiThread("SERVER: Client disconnected");
         }
     }
+
 
 }
