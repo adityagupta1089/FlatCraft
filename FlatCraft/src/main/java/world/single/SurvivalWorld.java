@@ -1,6 +1,11 @@
 package world.single;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.Camera;
@@ -15,6 +20,8 @@ import java.util.List;
 
 import hud.InventoryItem;
 import manager.ResourcesManager;
+import object.monster.FlyingMonster;
+import object.monster.WalkingMonster;
 import object.player.SurvivalPlayer;
 import object.tile.Tile;
 import spritesheet.TileSpritesheet;
@@ -33,6 +40,38 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
         camera.setBounds(0, 0, GRID_WIDTH * Tile.TILE_EDGE, GRID_HEIGHT * Tile.TILE_EDGE);
         camera.setBoundsEnabled(true);
         ((SurvivalPlayer) player).setStopEpsilon(PLAYER_STOP_EPSILON);
+        physicsWorld.setContactListener(new ContactListener() {
+
+            @Override
+            public void beginContact(Contact contact) {
+                final Fixture x1 = contact.getFixtureA();
+                final Fixture x2 = contact.getFixtureB();
+                if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null) {
+                    if (x1.getBody().getUserData().equals("player") || x2.getBody().getUserData().equals("player")) {
+                        ((SurvivalPlayer) player).increaseFootContacts();
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+                final Fixture x1 = contact.getFixtureA();
+                final Fixture x2 = contact.getFixtureB();
+                if (x1.getBody().getUserData() != null && x2.getBody().getUserData() != null) {
+                    if (x1.getBody().getUserData().equals("player") || x2.getBody().getUserData().equals("player")) {
+                        ((SurvivalPlayer) player).decreaseFootContacts();
+                    }
+                }
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+            }
+        });
     }
 
     @Override
@@ -48,6 +87,18 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
         camera.setChaseEntity(player);
         this.attachChild(player);
         entities.add(player);
+
+        WalkingMonster walkingMonster = new WalkingMonster(Tile.TILE_EDGE, (DIRT_WIDTH + 1) * Tile.TILE_EDGE);
+        walkingMonster.setPosition(walkingMonster.getX() + walkingMonster.getWidth() / 2, walkingMonster.getY() +
+                walkingMonster.getHeight() / 2);
+        this.attachChild(walkingMonster);
+        entities.add(walkingMonster);
+
+        FlyingMonster flyingMonster = new FlyingMonster(Tile.TILE_EDGE, (DIRT_WIDTH + 4) * Tile.TILE_EDGE);
+        flyingMonster.setPosition(flyingMonster.getX() + flyingMonster.getWidth() / 2, flyingMonster.getY() +
+                flyingMonster.getHeight() / 2);
+        this.attachChild(flyingMonster);
+        entities.add(flyingMonster);
     }
 
     @Override
@@ -101,6 +152,7 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     @Override
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+        if (ResourcesManager.hud.inventorySceneShown) return false;
         if (pSceneTouchEvent.isActionUp()) {
             int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
             int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
@@ -122,7 +174,6 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     @Override
     public void onPopulateQuickAccess(List<InventoryItem> qa) {
-        // TODO add more inventory items
         for (int i = TileSpritesheet.MIN_INDEX; i < TileSpritesheet.MAX_INDEX; i++) {
             qa.add(new InventoryItem(i, 100));
         }

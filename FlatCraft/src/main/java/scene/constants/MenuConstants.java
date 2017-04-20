@@ -1,0 +1,28 @@
+package scene.constants;
+
+public interface MenuConstants {
+    int MENU_PLAY = 0;
+    int MENU_OPTIONS = MENU_PLAY + 1;
+    int MENU_CREDITS = MENU_OPTIONS + 1;
+    int MENU_HELP = MENU_CREDITS + 1;
+    int MENU_EXIT = MENU_HELP + 1;
+
+    int OPTIONS_BACK = MENU_EXIT + 1;
+    int HELP_BACK = OPTIONS_BACK + 1;
+    int CREDITS_BACK = HELP_BACK + 1;
+
+    int MENU_SINGLE_PLAYER = CREDITS_BACK + 1;
+    int MENU_MULTI_PLAYER = MENU_SINGLE_PLAYER + 1;
+    int MENU_PLAYER_SELECTION_BACK = MENU_MULTI_PLAYER + 1;
+
+    int MENU_CREATIVE_MODE = MENU_PLAYER_SELECTION_BACK + 1;
+    int MENU_SURVIVAL_MODE = MENU_CREATIVE_MODE + 1;
+    int MENU_MODE_BACK = MENU_SURVIVAL_MODE + 1;
+
+    int SPACING = 150;
+
+    int VIEW_LEFT_MARGIN = 125;
+    int VIEW_RIGHT_MARGIN = 125;
+    int VIEW_TOP_MARGIN = 250;
+    int VIEW_BOTTOM_MARGIN = 180;
+}

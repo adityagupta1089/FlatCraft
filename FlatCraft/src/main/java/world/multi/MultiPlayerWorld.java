@@ -81,16 +81,13 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
     // ===========================================================
     // Fields
     // ===========================================================
-
+    private final SparseArray<Player> mPlayers = new SparseArray<>();
+    private final MessagePool<IMessage> mMessagePool = new MessagePool<>();
     private int mPlayerIDCounter = 0;
     private int thisPlayerID = -1;
-    private final SparseArray<Player> mPlayers = new SparseArray<>();
-
     private String mServerIP = LOCALHOST_IP;
     private SocketServer<SocketConnectionClientConnector> mSocketServer;
     private ServerConnector<SocketConnection> mServerConnector;
-
-    private final MessagePool<IMessage> mMessagePool = new MessagePool<>();
 
     // ===========================================================
     // Constructor
@@ -102,6 +99,35 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
         camera.setBoundsEnabled(true);
         initMessagePool();
         showDialog(DIALOG_CHOOSE_SERVER_OR_CLIENT_ID);
+    }
+
+    public static String getLocalIpAddress() {
+        WifiManager wifiMgr = (WifiManager) ResourcesManager.gameActivity.getSystemService(Context.WIFI_SERVICE);
+        if (wifiMgr.isWifiEnabled()) {
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+            int ip = wifiInfo.getIpAddress();
+            String wifiIpAddress = String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 &
+                    0xff));
+
+            return wifiIpAddress;
+        }
+
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
+
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private void initMessagePool() {
@@ -175,51 +201,49 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
 
     @Override
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+        if (ResourcesManager.hud.inventorySceneShown) return false;
         if (pSceneTouchEvent.isActionUp()) {
             int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
             int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
-            boolean valid = true;
             for (int i = 0; i < mPlayers.size(); i++) {
                 int key = mPlayers.keyAt(i);
                 Player _player = mPlayers.get(key);
                 if (blockX == ((int) _player.getX()) / Tile.TILE_EDGE && blockY == ((int) _player.getY()) / Tile.TILE_EDGE) {
-                    valid = false;
+                    return false;
                 }
             }
-            if (valid) {
-                if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) > 0) {
-                    ResourcesManager.hud.currItem.give();
-                    final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) mMessagePool.obtainMessage
-                            (FLAG_MESSAGE_DELETE_SPRITE);
-                    deleteSpriteMessage.set(blockX, blockY);
+            if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) > 0) {
+                ResourcesManager.hud.currItem.give();
+                final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) mMessagePool.obtainMessage
+                        (FLAG_MESSAGE_DELETE_SPRITE);
+                deleteSpriteMessage.set(blockX, blockY);
+                if (mSocketServer != null) {
+                    mSocketServer.sendBroadcastServerMessage(ClientConnector.
+                            PRIORITY_DEFAULT, deleteSpriteMessage);
+                    mMessagePool.recycleMessage(deleteSpriteMessage);
+                    deleteTile(blockX, blockY);
+                } else {
+                    mServerConnector.sendClientMessage(ClientConnector.
+                            PRIORITY_DEFAULT, deleteSpriteMessage);
+                    mMessagePool.recycleMessage(deleteSpriteMessage);
+                }
+                return true;
+            } else if (placeMode == MODE_PLACE_TILES && grid.indexOfKey(position(blockX, blockY)) < 0) {
+                if (ResourcesManager.hud.currItem.take()) {
+                    final AddSpriteMessage addSpriteMessage = (AddSpriteMessage) mMessagePool.obtainMessage
+                            (FLAG_MESSAGE_ADD_SPRITE);
+                    addSpriteMessage.set(blockX, blockY, ResourcesManager.hud.currItem.mTileType);
                     if (mSocketServer != null) {
                         mSocketServer.sendBroadcastServerMessage(ClientConnector.
-                                PRIORITY_DEFAULT, deleteSpriteMessage);
-                        mMessagePool.recycleMessage(deleteSpriteMessage);
-                        deleteTile(blockX, blockY);
+                                PRIORITY_DEFAULT, addSpriteMessage);
+                        mMessagePool.recycleMessage(addSpriteMessage);
+                        createTile(blockX, blockY, ResourcesManager.hud.currItem.mTileType);
                     } else {
                         mServerConnector.sendClientMessage(ClientConnector.
-                                PRIORITY_DEFAULT, deleteSpriteMessage);
-                        mMessagePool.recycleMessage(deleteSpriteMessage);
+                                PRIORITY_DEFAULT, addSpriteMessage);
+                        mMessagePool.recycleMessage(addSpriteMessage);
                     }
                     return true;
-                } else if (placeMode == MODE_PLACE_TILES && grid.indexOfKey(position(blockX, blockY)) < 0) {
-                    if (ResourcesManager.hud.currItem.take()) {
-                        final AddSpriteMessage addSpriteMessage = (AddSpriteMessage) mMessagePool.obtainMessage
-                                (FLAG_MESSAGE_ADD_SPRITE);
-                        addSpriteMessage.set(blockX, blockY, ResourcesManager.hud.currItem.mTileType);
-                        if (mSocketServer != null) {
-                            mSocketServer.sendBroadcastServerMessage(ClientConnector.
-                                    PRIORITY_DEFAULT, addSpriteMessage);
-                            mMessagePool.recycleMessage(addSpriteMessage);
-                            createTile(blockX, blockY, ResourcesManager.hud.currItem.mTileType);
-                        } else {
-                            mServerConnector.sendClientMessage(ClientConnector.
-                                    PRIORITY_DEFAULT, addSpriteMessage);
-                            mMessagePool.recycleMessage(addSpriteMessage);
-                        }
-                        return true;
-                    }
                 }
             }
         }
@@ -228,7 +252,6 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
 
     @Override
     public void onPopulateQuickAccess(List<InventoryItem> qa) {
-        // TODO add more inventory items
         for (int i = TileSpritesheet.MIN_INDEX; i < TileSpritesheet.MAX_INDEX; i++) {
             qa.add(new InventoryItem(i, 100));
         }
@@ -422,35 +445,6 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
             ResourcesManager.gameActivity.toastOnUiThread("Couldn't connect");
             SceneManager.getCurrentScene().onBackKeyPressed();
         }
-    }
-
-    public static String getLocalIpAddress() {
-        WifiManager wifiMgr = (WifiManager) ResourcesManager.gameActivity.getSystemService(Context.WIFI_SERVICE);
-        if (wifiMgr.isWifiEnabled()) {
-            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            int ip = wifiInfo.getIpAddress();
-            String wifiIpAddress = String.format("%d.%d.%d.%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 &
-                    0xff));
-
-            return wifiIpAddress;
-        }
-
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
-                        return inetAddress.getHostAddress();
-                    }
-
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     public void exit() {

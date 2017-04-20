@@ -29,9 +29,10 @@ import csp203.flatcraft.R;
 import manager.ResourcesManager;
 import manager.SceneManager;
 import scene.constants.GameModes;
+import scene.constants.MenuConstants;
 import scene.constants.VolumePreferences;
 
-public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener, VolumePreferences, GameModes {
+public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener, VolumePreferences, GameModes, MenuConstants {
 
     private MenuScene menuChildScene;
     private MenuScene creditsChildScene;
@@ -39,34 +40,8 @@ public class MainMenuScene extends BaseScene implements IOnMenuItemClickListener
     private MenuScene playerSelectionMenuScene;
     private MenuScene modeSelectionMenuScene;
 
-    private final int MENU_PLAY = 0;
-    private final int MENU_OPTIONS = MENU_PLAY + 1;
-    private final int MENU_CREDITS = MENU_OPTIONS + 1;
-    private final int MENU_HELP = MENU_CREDITS + 1;
-    private final int MENU_EXIT = MENU_HELP + 1;
-
-    private final int OPTIONS_BACK = MENU_EXIT + 1;
-    private final int HELP_BACK = OPTIONS_BACK + 1;
-    private final int CREDITS_BACK = HELP_BACK + 1;
-
-    private final int MENU_SINGLE_PLAYER = CREDITS_BACK + 1;
-    private final int MENU_MULTI_PLAYER = MENU_SINGLE_PLAYER + 1;
-    private final int MENU_PLAYER_SELECTION_BACK = MENU_MULTI_PLAYER + 1;
-
-    private final int MENU_CREATIVE_MODE = MENU_PLAYER_SELECTION_BACK + 1;
-    private final int MENU_SURVIVAL_MODE = MENU_CREATIVE_MODE + 1;
-    private final int MENU_MODE_BACK = MENU_SURVIVAL_MODE + 1;
-
-    private static final int SPACING = 150;
-
     private WebView helpView;
     private WebView creditsView;
-
-    private static final int VIEW_LEFT_MARGIN = 125;
-    private static final int VIEW_RIGHT_MARGIN = 125;
-    private static final int VIEW_TOP_MARGIN = 250;
-    private static final int VIEW_BOTTOM_MARGIN = 180;
-
 
     private List<IEntity> entities;
 

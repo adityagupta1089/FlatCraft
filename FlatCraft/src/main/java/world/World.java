@@ -27,34 +27,26 @@ import object.tile.Tile;
 
 public abstract class World extends Scene {
 
-    private static final float SOLID_OBJECT_DENSITY = 1;
-    private static final float SOLID_OBJECT_ELASTICITY = 0;
-    private static final float SOLID_OBJECT_FRICTION = 0.5f;
-
-    protected static final int GRID_WIDTH = 23;
-    protected static final int GRID_HEIGHT = 23;
-
-    protected int placeMode;
-
     public static final int MODE_PLACE_TILES = 0;
     public static final int MODE_DELETE_TILES = 1;
-
+    protected static final int GRID_WIDTH = 23;
+    protected static final int GRID_HEIGHT = 23;
     protected static final int BACKGROUND_TILE_EDGE = 256;
     protected static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE /
             BACKGROUND_TILE_EDGE;
     protected static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE /
             BACKGROUND_TILE_EDGE;
-
-    protected SparseArray<Tile> grid;
-    protected SparseArray<Body> bodies;
-    public Player player;
-
-    protected Set<IEntity> entities;
-
-    protected PhysicsWorld physicsWorld;
-
+    private static final float SOLID_OBJECT_DENSITY = 1;
+    private static final float SOLID_OBJECT_ELASTICITY = 0;
+    private static final float SOLID_OBJECT_FRICTION = 0.5f;
     protected static final FixtureDef fixedSolidObjectFixtureDef = PhysicsFactory
             .createFixtureDef(SOLID_OBJECT_DENSITY, SOLID_OBJECT_ELASTICITY, SOLID_OBJECT_FRICTION);
+    public Player player;
+    protected int placeMode;
+    protected SparseArray<Tile> grid;
+    protected SparseArray<Body> bodies;
+    protected Set<IEntity> entities;
+    protected PhysicsWorld physicsWorld;
 
     protected World() {
         entities = new HashSet<>();
@@ -119,6 +111,7 @@ public abstract class World extends Scene {
         this.attachChild(newTile);
         Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
                 fixedSolidObjectFixtureDef);
+        body.setUserData("tile");
         bodies.put(pos, body);
     }
 

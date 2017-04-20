@@ -59,81 +59,62 @@ public class ResourcesManager {
     // Variables for Splash Scene
     // --------------------------------------------------------------//
     public static ITextureRegion splash_region;
-    private static BitmapTextureAtlas splashTextureAtlas;
-
     // --------------------------------------------------------------//
     // Variables for Main Menu Scene
     // --------------------------------------------------------------//
     public static ITextureRegion menuBackgroundRegion;
-
     public static Font caviarDreams;
-
-    private static BuildableBitmapTextureAtlas menuTextureAtlas;
-
     public static Music menuMusic;
-
-    // --------------------------------------------------------------//
-    // Variables for Game Scene
-    // --------------------------------------------------------------//
-    private static List<BuildableBitmapTextureAtlas> atlases = new ArrayList<>();
-
     // Tiles
     public static SparseArray<TextureRegion> tileRegions;
-
-    private static TexturePackTextureRegionLibrary mSpriteSheetTexturePackTextureRegionLibrary;
-    private static BuildableBitmapTextureAtlas mOnScreenControlTextureAtlas;
-    private static BuildableBitmapTextureAtlas inventoryAtlas;
-    private static BuildableBitmapTextureAtlas gameTextureAtlas;
-
-    // Background
-    private static TexturePackTextureRegionLibrary mBackgroundSpritesheetTexturePackTextureRegionLibrary;
     public static TextureRegion skyBoxBottomRegion;
     public static TextureRegion skyBoxSideHillsRegion;
     public static TextureRegion skyBoxTopRegion;
-
     // Controller
     public static ITextureRegion mOnScreenControlBaseTextureRegion;
     public static ITextureRegion mOnScreenControlKnobTextureRegion;
-
     // game scene buttons
     public static ITextureRegion menuRegion;
-
     public static ITiledTextureRegion placeTilesYesRegion;
     public static ITiledTextureRegion placeTilesNoRegion;
-
     public static ITiledTextureRegion soundRegion;
-
     // Player & Monsters
     public static ITextureRegion playerRegion;
     public static ITextureRegion player2Region;
     public static ITextureRegion player3Region;
     public static ITextureRegion player4Region;
-
     public static ITiledTextureRegion survivalPlayer;
     public static ITiledTextureRegion enemy_walking;
     public static ITiledTextureRegion enemy_flying;
-
     // Inventory
     public static TextureRegion inventoryBaseRegion;
-
     // Music & Sound
     public static Music gameMusic;
-
     public static Sound placeBlockSound, deleteBlockSound, buttonClickSound;
-
     // Misc
     public static FlatCraftHUD hud;
     public static World world;
-
     public static float mfxVol;
     public static float sfxVol;
-
     // Font
     public static Font caviarDreamsGame;
-
     // selector
     public static Sprite selector;
     public static TextureRegion selectorRegion;
+    public static TextureRegion metalBaseRegion;
+    public static TextureRegion moreTilesRegion;
+    private static BitmapTextureAtlas splashTextureAtlas;
+    private static BuildableBitmapTextureAtlas menuTextureAtlas;
+    // --------------------------------------------------------------//
+    // Variables for Game Scene
+    // --------------------------------------------------------------//
+    private static List<BuildableBitmapTextureAtlas> atlases = new ArrayList<>();
+    private static TexturePackTextureRegionLibrary mSpriteSheetTexturePackTextureRegionLibrary;
+    private static BuildableBitmapTextureAtlas mOnScreenControlTextureAtlas;
+    private static BuildableBitmapTextureAtlas inventoryAtlas;
+    private static BuildableBitmapTextureAtlas gameTextureAtlas;
+    // Background
+    private static TexturePackTextureRegionLibrary mBackgroundSpritesheetTexturePackTextureRegionLibrary;
 
     // --------------------------------------------------------------//
     // Class Logic
@@ -315,6 +296,8 @@ public class ResourcesManager {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/inventory/");
         inventoryBaseRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas, gameActivity, "base.png");
         selectorRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas, gameActivity, "selector.png");
+        metalBaseRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas, gameActivity, "metalPanel.png");
+        moreTilesRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(inventoryAtlas, gameActivity, "moretiles.png");
         try {
             inventoryAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
             inventoryAtlas.load();

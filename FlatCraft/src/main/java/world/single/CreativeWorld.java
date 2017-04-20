@@ -74,7 +74,9 @@ public class CreativeWorld extends World implements world.constants.CreativeCons
                 } else {
                     temp = ResourcesManager.skyBoxSideHillsRegion;
                 }
-                Sprite bgtile = new Sprite(j * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, i * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, BACKGROUND_TILE_EDGE, BACKGROUND_TILE_EDGE, temp, ResourcesManager.vertexBufferObjectManager);
+                Sprite bgtile = new Sprite(j * BACKGROUND_TILE_EDGE + BACKGROUND_TILE_EDGE / 2, i * BACKGROUND_TILE_EDGE +
+                        BACKGROUND_TILE_EDGE / 2, BACKGROUND_TILE_EDGE, BACKGROUND_TILE_EDGE, temp, ResourcesManager
+                        .vertexBufferObjectManager);
                 attachChild(bgtile);
                 entities.add(bgtile);
             }
@@ -93,6 +95,7 @@ public class CreativeWorld extends World implements world.constants.CreativeCons
 
     @Override
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+        if (ResourcesManager.hud.inventorySceneShown) return false;
         if (pSceneTouchEvent.isActionUp()) {
             int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
             int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
@@ -121,20 +124,9 @@ public class CreativeWorld extends World implements world.constants.CreativeCons
 
     @Override
     public void onPopulateQuickAccess(List<InventoryItem> qa) {
-        // TODO add more inventory items
         for (int i = TileSpritesheet.MIN_INDEX; i < TileSpritesheet.MAX_INDEX; i++) {
             qa.add(new InventoryItem(i, 100));
         }
-        /*
-         * qa.add(new InventoryItem("BRICK_RED", 100));
-		 * qa.add(new InventoryItem("COTTON_BLUE", 100));
-		 * qa.add(new InventoryItem("COTTON_GREEN", 100));
-		 * qa.add(new InventoryItem("COTTON_RED", 100));
-		 * qa.add(new InventoryItem("COTTON_TAN", 100));
-		 * qa.add(new InventoryItem("FENCE_WOOD", 100));
-		 * qa.add(new InventoryItem("STONE", 100));
-		 * qa.add(new InventoryItem("WOOD", 100));
-		 */
 
     }
 

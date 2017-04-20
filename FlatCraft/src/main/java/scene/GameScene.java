@@ -1,7 +1,11 @@
 package scene;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.SeekBar;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -30,29 +34,32 @@ import java.util.LinkedList;
 import java.util.List;
 
 import base.BaseScene;
+import csp203.flatcraft.R;
 import hud.FlatCraftHUD;
 import manager.ResourcesManager;
 import manager.SceneManager;
 import scene.constants.GameModes;
+import scene.constants.VolumePreferences;
 import world.World;
 import world.multi.MultiPlayerWorld;
 import world.single.CreativeWorld;
 import world.single.SurvivalWorld;
 
-public class GameScene extends BaseScene implements IOnSceneTouchListener, GameModes {
+public class GameScene extends BaseScene implements IOnSceneTouchListener, GameModes, VolumePreferences {
+    private static int mode;
     // --------------------------------------------------------------//
     // Variables
     // --------------------------------------------------------------//
     private FlatCraftHUD gameHUD;
     private World world;
     private PhysicsWorld physicsWorld;
-
     private TiledSprite placeTilesYes;
     private TiledSprite placeTilesNo;
-
     private List<IEntity> entities;
 
-    private static int mode;
+    public static void setGameMode(int pmode) {
+        mode = pmode;
+    }
 
     // --------------------------------------------------------------//
     // Class Logic
@@ -93,6 +100,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     @Override
     public void onBackKeyPressed() {
         ResourcesManager.buttonClickSound.play();
+        if (gameHUD.inventorySceneShown) {
+            gameHUD.resetInventory();
+            return;
+        }
         if (mode == MODE_MULTI_PLAYER) {
             ((MultiPlayerWorld) world).exit();
         }
@@ -192,14 +203,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     }
 
     private void createAnalogOnScreenController() {
-        final AnalogOnScreenControl analogOnScreenControl = new AnalogOnScreenControl(200, 200, camera, ResourcesManager
+        final AnalogOnScreenControl analogOnScreenControl = new AnalogOnScreenControl(200, 120, camera, ResourcesManager
                 .mOnScreenControlBaseTextureRegion, ResourcesManager.mOnScreenControlKnobTextureRegion, 0.1f, 200,
                 vertexBufferObjectManager, new IAnalogOnScreenControlListener() {
             @Override
             public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float
                     pValueY) {
                 if (mode != MODE_MULTI_PLAYER) {
-                        world.player.setVelocityDirection(pValueX, pValueY);
+                    world.player.setVelocityDirection(pValueX, pValueY);
                 } else {
                     ((MultiPlayerWorld) world).setPlayerVelocityDirection(pValueX, pValueY);
                 }
@@ -243,73 +254,116 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
                 return false;
             }
         };
-        TiledSprite soundSprite = new TiledSprite(1500, 900, ResourcesManager.soundRegion, vertexBufferObjectManager) {
-
-            @Override
-            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if (pSceneTouchEvent.isActionUp()) {
-                    ResourcesManager.buttonClickSound.play();
-                    this.setCurrentTileIndex(1 - this.getCurrentTileIndex());
-                    if (ResourcesManager.gameMusic.isPlaying()) ResourcesManager.gameMusic.pause();
-                    else ResourcesManager.gameMusic.play();
-                    return true;
-                }
-                return false;
-            }
-        };
 
         Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
-                    ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    switch (which) {
-                                        case DialogInterface.BUTTON_POSITIVE:
-                                            onBackKeyPressed();
-                                            break;
-
-                                        case DialogInterface.BUTTON_NEGATIVE:
-                                            ResourcesManager.buttonClickSound.play();
-                                            break;
-                                    }
-                                }
-                            };
-                            AlertDialog.Builder builder = new AlertDialog.Builder(ResourcesManager.gameActivity);
-                            builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener).setNegativeButton
-                                    ("No", dialogClickListener).show();
-                        }
-                    });
-
+                    createMenuScene();
                     return true;
                 }
                 return false;
             }
         };
 
+        Sprite moreTiles = new Sprite(1525, 180, ResourcesManager.moreTilesRegion, vertexBufferObjectManager) {
+            private Sprite inventoryScene;
+
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if (pSceneTouchEvent.isActionUp()) {
+                    ResourcesManager.buttonClickSound.play();
+                    gameHUD.inventorySceneToggle();
+                    return true;
+                }
+
+                return false;
+            }
+        };
+
         placeTilesYes.setScale(1.5f);
         placeTilesNo.setScale(1.5f);
-
-        soundSprite.setScale(1.5f * 88f / 100f);
-
-        menuSprite.setScale(1.5f * 88f / 100f);
+        menuSprite.setScale(1.5f * menuSprite.getHeight() / placeTilesYes.getHeight());
+        moreTiles.setScale(1.5f * moreTiles.getHeight() / placeTilesYes.getHeight());
 
         gameHUD.attachChild(placeTilesYes);
         gameHUD.attachChild(placeTilesNo);
-        gameHUD.attachChild(soundSprite);
-
+        gameHUD.attachChild(moreTiles);
         gameHUD.attachChild(menuSprite);
 
         gameHUD.registerTouchArea(placeTilesYes);
         gameHUD.registerTouchArea(placeTilesNo);
-        gameHUD.registerTouchArea(soundSprite);
-
+        gameHUD.registerTouchArea(moreTiles);
         gameHUD.registerTouchArea(menuSprite);
+    }
+
+    private void createMenuScene() {
+        ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Context context = ResourcesManager.gameActivity;
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View dialogView = inflater.inflate(R.layout.options, null);
+                builder.setView(dialogView);
+                builder.setTitle("Options");
+                final SeekBar mfxSeekBar = (SeekBar) dialogView.findViewById(R.id.seekBar1);
+                mfxSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        engine.getMusicManager().setMasterVolume(progress / 100f);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        //nothing to do
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        ResourcesManager.mfxVol = seekBar.getProgress() / 100f;
+                    }
+                });
+                final SeekBar sfxSeekBar = (SeekBar) dialogView.findViewById(R.id.seekBar2);
+                sfxSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        engine.getSoundManager().setMasterVolume(progress / 100f);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        //nothing to do
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        ResourcesManager.sfxVol = seekBar.getProgress() / 100f;
+                    }
+                });
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ResourcesManager.buttonClickSound.play();
+                        switch (which) {
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                onBackKeyPressed();
+                                break;
+                            case DialogInterface.BUTTON_NEUTRAL:
+                                break;
+                        }
+                    }
+                };
+                builder.setPositiveButton("Resume", dialogClickListener).setNegativeButton("Exit",
+                        dialogClickListener);
+                builder.setCancelable(true);
+                builder.show();
+                mfxSeekBar.setProgress((int) (ResourcesManager.engine.getMusicManager().getMasterVolume() * 100));
+                sfxSeekBar.setProgress((int) (ResourcesManager.engine.getSoundManager().getMasterVolume() * 100));
+            }
+        });
     }
 
     @Override
@@ -325,9 +379,5 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
             placeTilesYes.setCurrentTileIndex(0);
             placeTilesNo.setCurrentTileIndex(1);
         }
-    }
-
-    public static void setGameMode(int pmode) {
-        mode = pmode;
     }
 }
