@@ -36,6 +36,7 @@ import java.util.List;
 
 import hud.FlatCraftHUD;
 import main.GameActivity;
+import object.monster.Monster;
 import spritesheet.BackgroundSpritesheet;
 import spritesheet.TileSpritesheet;
 import world.World;
@@ -105,6 +106,8 @@ public class ResourcesManager {
     public static TextureRegion moreTilesRegion;
     private static BitmapTextureAtlas splashTextureAtlas;
     private static BuildableBitmapTextureAtlas menuTextureAtlas;
+    // player monster collision
+    public static boolean gameRunning = true;
     // --------------------------------------------------------------//
     // Variables for Game Scene
     // --------------------------------------------------------------//

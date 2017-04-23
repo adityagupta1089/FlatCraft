@@ -3,6 +3,7 @@ package scene;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
@@ -56,6 +57,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
     private TiledSprite placeTilesYes;
     private TiledSprite placeTilesNo;
     private List<IEntity> entities;
+
 
     public static void setGameMode(int pmode) {
         mode = pmode;
@@ -209,6 +211,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
             @Override
             public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float
                     pValueY) {
+                if (!ResourcesManager.gameRunning) return;
                 if (mode != MODE_MULTI_PLAYER) {
                     world.player.setVelocityDirection(pValueX, pValueY);
                 } else {
@@ -230,6 +233,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         placeTilesYes = new TiledSprite(1700, 180, ResourcesManager.placeTilesYesRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     world.setPlaceMode(World.MODE_PLACE_TILES);
@@ -245,6 +249,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         placeTilesNo = new TiledSprite(1700, 380, ResourcesManager.placeTilesNoRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     world.setPlaceMode(World.MODE_DELETE_TILES);
@@ -258,6 +263,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     createMenuScene();
@@ -268,10 +274,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         };
 
         Sprite moreTiles = new Sprite(1525, 180, ResourcesManager.moreTilesRegion, vertexBufferObjectManager) {
-            private Sprite inventoryScene;
 
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     gameHUD.inventorySceneToggle();
@@ -371,7 +377,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         return world.onSceneTouchEvent(pScene, pSceneTouchEvent);
     }
 
-    private void setTilePlacementMode(int modePlaceTiles) {
+    public void setTilePlacementMode(int modePlaceTiles) {
         if (modePlaceTiles == World.MODE_PLACE_TILES) {
             placeTilesYes.setCurrentTileIndex(1);
             placeTilesNo.setCurrentTileIndex(0);
@@ -380,4 +386,10 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
             placeTilesNo.setCurrentTileIndex(1);
         }
     }
+
+    public World getWorld() {
+        return world;
+    }
+
+
 }

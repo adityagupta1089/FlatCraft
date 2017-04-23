@@ -9,6 +9,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 import org.andengine.engine.Engine.EngineLock;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
@@ -29,8 +31,8 @@ public abstract class World extends Scene {
 
     public static final int MODE_PLACE_TILES = 0;
     public static final int MODE_DELETE_TILES = 1;
-    protected static final int GRID_WIDTH = 23;
-    protected static final int GRID_HEIGHT = 23;
+    protected static final int GRID_WIDTH = 20;
+    protected static final int GRID_HEIGHT = 20;
     protected static final int BACKGROUND_TILE_EDGE = 256;
     protected static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE /
             BACKGROUND_TILE_EDGE;
@@ -100,10 +102,12 @@ public abstract class World extends Scene {
         return (GRID_WIDTH + 1) * i + j;
     }
 
-    protected void createTile(int i, int j, int type) {
+    private static final float TOTAL_TIME = 30f;
+
+    protected void createTile(final int i, final int j, int type, boolean userData, boolean vanish) {
         ResourcesManager.placeBlockSound.play();
         int pos = position(i, j);
-        Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
+        final Tile newTile = new Tile(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
                 j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2, type);
         newTile.setPosition(i * Tile.TILE_EDGE + Tile.TILE_EDGE / 2,
                 j * Tile.TILE_EDGE + Tile.TILE_EDGE / 2);
@@ -111,13 +115,39 @@ public abstract class World extends Scene {
         this.attachChild(newTile);
         Body body = PhysicsFactory.createBoxBody(physicsWorld, newTile, BodyType.StaticBody,
                 fixedSolidObjectFixtureDef);
-        body.setUserData("tile");
+        if (userData) body.setUserData("tile");
         bodies.put(pos, body);
+        if (vanish) {
+            newTile.registerUpdateHandler(new TimerHandler(0.1f, true, new ITimerCallback() {
+                @Override
+                public void onTimePassed(TimerHandler pTimerHandler) {
+                    if (pTimerHandler.getTimerSecondsElapsed() < TOTAL_TIME)
+                        newTile.setAlpha(newTile.getAlpha() - 0.1f / TOTAL_TIME);
+                    else
+                        newTile.unregisterUpdateHandler(pTimerHandler);
+                }
+            }));
+            this.registerUpdateHandler(new TimerHandler(TOTAL_TIME, new ITimerCallback() {
+                @Override
+                public void onTimePassed(TimerHandler pTimerHandler) {
+                    deleteTile(i, j);
+                }
+            }));
+        }
+    }
+
+    protected void createTile(int i, int j, int type) {
+        createTile(i, j, type, true, false);
+    }
+
+    protected void createTile(int i, int j, int type, boolean userData) {
+        createTile(i, j, type, userData, false);
     }
 
     protected void deleteTile(int i, int j) {
         ResourcesManager.deleteBlockSound.play();
         int pos = position(i, j);
+        if (bodies.indexOfKey(pos) < 0) return;
         physicsWorld.destroyBody(bodies.get(pos));
         bodies.remove(pos);
         Tile t = grid.get(pos);

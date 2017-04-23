@@ -41,4 +41,5 @@ public class SurvivalPlayer extends Player {
     public void decreaseFootContacts() {
         footContacts--;
     }
+
 }

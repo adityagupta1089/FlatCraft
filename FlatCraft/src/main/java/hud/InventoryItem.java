@@ -1,12 +1,17 @@
 package hud;
 
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.util.modifier.ease.EaseLinear;
 
 import manager.ResourcesManager;
+import manager.SceneManager;
 import object.tile.Tile;
+import scene.GameScene;
+import world.World;
 
 public class InventoryItem extends Tile {
 
@@ -14,7 +19,11 @@ public class InventoryItem extends Tile {
     private int mCnt;
     private Text mText;
 
+    public static final int REGNERATE_TIME = 20;
+
     private boolean onQuickAccess = false;
+
+    private boolean regenerate = false;
 
     public InventoryItem(int pTileType, int cnt) {
         super(0, 0, pTileType);
@@ -28,6 +37,20 @@ public class InventoryItem extends Tile {
         this.attachChild(mText);
     }
 
+    public InventoryItem(int pTileType, int cnt, boolean pRegenerate) {
+        this(pTileType, cnt);
+        regenerate = pRegenerate;
+        if (regenerate) {
+            this.registerUpdateHandler(new TimerHandler(REGNERATE_TIME, true, new ITimerCallback() {
+                @Override
+                public void onTimePassed(TimerHandler pTimerHandler) {
+                    if (InventoryItem.this.mCnt < 10)
+                        InventoryItem.this.give();
+                }
+            }));
+        }
+    }
+
     void setListener(FlatCraftHUD flatCraftHUD) {
         mHUD = flatCraftHUD;
     }
@@ -35,6 +58,11 @@ public class InventoryItem extends Tile {
     @Override
     public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, float pTouchAreaLocalX,
                                  float pTouchAreaLocalY) {
+        if (pSceneTouchEvent.isActionUp()) {
+            GameScene gs = (GameScene) SceneManager.getCurrentScene();
+            gs.getWorld().setPlaceMode(World.MODE_PLACE_TILES);
+            gs.setTilePlacementMode(World.MODE_PLACE_TILES);
+        }
         if (onQuickAccess) {
             if (pSceneTouchEvent.isActionUp()) {
                 ResourcesManager.buttonClickSound.play();
