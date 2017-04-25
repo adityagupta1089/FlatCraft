@@ -212,7 +212,7 @@ public class MultiPlayerWorld extends World implements CreativeConstants, Client
                     return false;
                 }
             }
-            if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) > 0) {
+            if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) >= 0) {
                 ResourcesManager.hud.currItem.give();
                 final DeleteSpriteMessage deleteSpriteMessage = (DeleteSpriteMessage) mMessagePool.obtainMessage
                         (FLAG_MESSAGE_DELETE_SPRITE);

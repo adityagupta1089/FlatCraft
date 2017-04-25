@@ -33,7 +33,9 @@ public class WalkingMonster extends Monster {
         this.registerUpdateHandler(new TimerHandler(2f, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-                WalkingMonster.this.monsterBody.setLinearVelocity(new Vector2((r.nextBoolean() ? 8 : -8), 0));
+                WalkingMonster.this.monsterBody.setLinearVelocity(new Vector2((r.nextBoolean() ? 8 : -8), WalkingMonster.this
+                        .monsterBody
+                        .getLinearVelocity().y));
             }
         }));
         monsterBody.setUserData("monster");
@@ -43,8 +45,9 @@ public class WalkingMonster extends Monster {
 
     @Override
     protected void onManagedUpdate(float pSecondsElapsed) {
-        if (Math.abs(this.getX() - p.getX()) < 3 * Tile.TILE_EDGE) {
-            this.monsterBody.setLinearVelocity(new Vector2(Math.signum(p.getX() - this.getX()) * 4, 0));
+        if (Math.abs(this.getX() - p.getX()) < 3 * Tile.TILE_EDGE && r.nextFloat() < 0.10) {
+            this.monsterBody.setLinearVelocity(new Vector2(Math.signum(p.getX() - this.getX()) * 4, this.monsterBody
+                    .getLinearVelocity().y));
         }
         if (this.monsterBody.getLinearVelocity().x < -THRESHOLD) this.setFlippedHorizontal(true);
         else if (this.monsterBody.getLinearVelocity().x > THRESHOLD) this.setFlippedHorizontal(false);

@@ -19,6 +19,8 @@ public class InventoryItem extends Tile {
     private int mCnt;
     private Text mText;
 
+    private static boolean tranferring = false;
+
     public static final int REGNERATE_TIME = 20;
 
     private boolean onQuickAccess = false;
@@ -44,7 +46,7 @@ public class InventoryItem extends Tile {
             this.registerUpdateHandler(new TimerHandler(REGNERATE_TIME, true, new ITimerCallback() {
                 @Override
                 public void onTimePassed(TimerHandler pTimerHandler) {
-                    if (InventoryItem.this.mCnt < 10)
+                    if (InventoryItem.this.mCnt < 20)
                         InventoryItem.this.give();
                 }
             }));
@@ -70,8 +72,9 @@ public class InventoryItem extends Tile {
                 ResourcesManager.selector.setPosition(this);
                 return true;
             }
-        } else {
+        } else if (!tranferring) {
             if (pSceneTouchEvent.isActionUp()) {
+                tranferring = true;
                 ResourcesManager.buttonClickSound.play();
 
                 final float new_x = mHUD.currItem.getX(), new_y = mHUD.currItem.getY();
@@ -93,6 +96,12 @@ public class InventoryItem extends Tile {
                         old_x, old_y, EaseLinear.getInstance()));
                 this.registerEntityModifier(new MoveModifier(0.5f, this.getX(), this.getY(), new_x, new_y,
                         EaseLinear.getInstance()));
+                this.registerUpdateHandler(new TimerHandler(1f, new ITimerCallback() {
+                    @Override
+                    public void onTimePassed(TimerHandler pTimerHandler) {
+                        tranferring = false;
+                    }
+                }));
 
                 mHUD.currItem.setOnQuickAccess(false);
                 this.onQuickAccess = true;

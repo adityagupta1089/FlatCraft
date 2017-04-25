@@ -100,7 +100,7 @@ public class CreativeWorld extends World implements world.constants.CreativeCons
             int blockX = ((int) pSceneTouchEvent.getX()) / Tile.TILE_EDGE;
             int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
             if (blockX != ((int) player.getX()) / Tile.TILE_EDGE || blockY != ((int) player.getY()) / Tile.TILE_EDGE) {
-                if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) > 0) {
+                if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) >= 0) {
                     ResourcesManager.hud.currItem.give();
                     deleteTile(blockX, blockY);
                     return true;

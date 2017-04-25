@@ -17,7 +17,7 @@ import object.tile.Tile;
 
 public class FlyingMonster extends Monster {
 
-    private static final Random nd = new Random();
+    private static final Random r = new Random();
 
     public FlyingMonster(float pX, float pY, PhysicsWorld physicsWorld, Player mp) {
         super(pX, pY, ResourcesManager.enemy_flying, mp);
@@ -29,7 +29,8 @@ public class FlyingMonster extends Monster {
         this.registerUpdateHandler(new TimerHandler(2f, true, new ITimerCallback() {
             @Override
             public void onTimePassed(TimerHandler pTimerHandler) {
-                FlyingMonster.this.monsterBody.setLinearVelocity(new Vector2((nd.nextBoolean() ? 8 : -8), nd.nextFloat() * 12));
+                FlyingMonster.this.monsterBody.setLinearVelocity(new Vector2((r.nextBoolean() ? 8 : -8), (2 + r.nextFloat())
+                        * 6));
             }
         }));
         monsterBody.setUserData("monster");
@@ -39,8 +40,8 @@ public class FlyingMonster extends Monster {
 
     @Override
     protected void onManagedUpdate(float pSecondsElapsed) {
-        if (Math.abs(this.getX() - p.getX()) < 3 * Tile.TILE_EDGE) {
-            this.monsterBody.setLinearVelocity(new Vector2(Math.signum(p.getX() - this.getX()) * 4, nd.nextFloat() * 12));
+        if (Math.abs(this.getX() - p.getX()) < 3 * Tile.TILE_EDGE && r.nextFloat() < 0.10) {
+            this.monsterBody.setLinearVelocity(new Vector2(Math.signum(p.getX() - this.getX()) * 4, (2 + r.nextFloat()) * 12));
         }
         if (this.monsterBody.getLinearVelocity().x < -THRESHOLD) this.setFlippedHorizontal(true);
         else if (this.monsterBody.getLinearVelocity().x > THRESHOLD) this.setFlippedHorizontal(false);

@@ -23,6 +23,7 @@ public class FlatCraftHUD extends HUD {
     private int inventoryScenes;
     private int inventorySceneCount = 0;
 
+
     public FlatCraftHUD() {
         super();
         entities = new ArrayList<>();

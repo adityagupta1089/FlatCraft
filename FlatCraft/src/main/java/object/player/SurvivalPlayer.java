@@ -10,7 +10,7 @@ public class SurvivalPlayer extends Player {
 
     private float STOP_EPSILON;
 
-    private int footContacts = 0;
+    private boolean footContacts = false;
 
     public SurvivalPlayer(float pX, float pY, PhysicsWorld physicsWorld) {
         super(pX, pY, physicsWorld);
@@ -19,7 +19,7 @@ public class SurvivalPlayer extends Player {
 
     @Override
     public void setVelocityDirection(float f, float g) {
-        if (footContacts < 1) g = 0;
+        if (!footContacts) g = 0;
         float vx = playerBody.getLinearVelocity().x, vy = playerBody.getLinearVelocity().y;
         if (Math.abs(f) > MOVEMENT_THRESHOLD) {
             vx = Math.signum(f) * VELOCITY_X;
@@ -35,11 +35,11 @@ public class SurvivalPlayer extends Player {
     }
 
     public void increaseFootContacts() {
-        footContacts++;
+        footContacts = true;
     }
 
     public void decreaseFootContacts() {
-        footContacts--;
+        footContacts = false;
     }
 
 }

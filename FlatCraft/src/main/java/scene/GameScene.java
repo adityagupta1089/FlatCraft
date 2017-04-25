@@ -3,7 +3,6 @@ package scene;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.SeekBar;
@@ -14,16 +13,12 @@ import com.badlogic.gdx.physics.box2d.Body;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
-import org.andengine.engine.handler.timer.ITimerCallback;
-import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.sprite.TiledSprite;
-import org.andengine.entity.text.Text;
-import org.andengine.entity.util.FPSCounter;
 import org.andengine.extension.physics.box2d.FixedStepPhysicsWorld;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
@@ -81,22 +76,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
 
         this.setOnSceneTouchListener(this);
 
-        createFPSCounter();
-    }
-
-    private void createFPSCounter() {
-        final FPSCounter fpsCounter = new FPSCounter();
-        this.engine.registerUpdateHandler(fpsCounter);
-        final Text fpsText = new Text(250, 1000, ResourcesManager.caviarDreams, "FPS: XX.XX", vertexBufferObjectManager);
-
-        gameHUD.attachChild(fpsText);
-
-        gameHUD.registerUpdateHandler(new TimerHandler(1 / 20f, true, new ITimerCallback() {
-            @Override
-            public void onTimePassed(final TimerHandler pTimerHandler) {
-                fpsText.setText("FPS: " + String.format("%2.2f", fpsCounter.getFPS()));
-            }
-        }));
     }
 
     @Override
@@ -211,7 +190,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
             @Override
             public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float
                     pValueY) {
-                if (!ResourcesManager.gameRunning) return;
                 if (mode != MODE_MULTI_PLAYER) {
                     world.player.setVelocityDirection(pValueX, pValueY);
                 } else {
@@ -233,7 +211,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         placeTilesYes = new TiledSprite(1700, 180, ResourcesManager.placeTilesYesRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     world.setPlaceMode(World.MODE_PLACE_TILES);
@@ -249,7 +226,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         placeTilesNo = new TiledSprite(1700, 380, ResourcesManager.placeTilesNoRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     world.setPlaceMode(World.MODE_DELETE_TILES);
@@ -263,7 +239,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
         Sprite menuSprite = new Sprite(1700, 900, ResourcesManager.menuRegion, vertexBufferObjectManager) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     createMenuScene();
@@ -277,7 +252,6 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener, GameM
 
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if (!ResourcesManager.gameRunning) return false;
                 if (pSceneTouchEvent.isActionUp()) {
                     ResourcesManager.buttonClickSound.play();
                     gameHUD.inventorySceneToggle();

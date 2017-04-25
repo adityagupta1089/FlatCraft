@@ -31,12 +31,18 @@ public abstract class World extends Scene {
 
     public static final int MODE_PLACE_TILES = 0;
     public static final int MODE_DELETE_TILES = 1;
-    protected static final int GRID_WIDTH = 20;
-    protected static final int GRID_HEIGHT = 20;
+    protected static final int GRID_WIDTH = 23;
+    protected static final int GRID_HEIGHT = 23;
+    protected static final int SURVIVAL_GRID_WIDTH = 40;
+    protected static final int SURVIVAL_GRID_HEIGHT = 15;
     protected static final int BACKGROUND_TILE_EDGE = 256;
     protected static final int BACKGROUND_GRID_WIDTH = GRID_WIDTH * Tile.TILE_EDGE /
             BACKGROUND_TILE_EDGE;
     protected static final int BACKGROUND_GRID_HEIGHT = GRID_HEIGHT * Tile.TILE_EDGE /
+            BACKGROUND_TILE_EDGE;
+    protected static final int SURVIVAL_BACKGROUND_GRID_WIDTH = SURVIVAL_GRID_WIDTH * Tile.TILE_EDGE /
+            BACKGROUND_TILE_EDGE;
+    protected static final int SURVIVAL_BACKGROUND_GRID_HEIGHT = SURVIVAL_GRID_HEIGHT * Tile.TILE_EDGE /
             BACKGROUND_TILE_EDGE;
     private static final float SOLID_OBJECT_DENSITY = 1;
     private static final float SOLID_OBJECT_ELASTICITY = 0;
@@ -156,6 +162,8 @@ public abstract class World extends Scene {
         engineLock.lock();
         entities.remove(t);
         t.detachSelf();
+        t.clearUpdateHandlers();
+        t.clearEntityModifiers();
         t.dispose();
         t = null;
         engineLock.unlock();

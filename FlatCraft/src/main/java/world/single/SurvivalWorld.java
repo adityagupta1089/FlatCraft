@@ -24,6 +24,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.util.adt.color.Color;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -47,11 +48,14 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     private long startTime;
 
+    private static List<Monster> enemies = new ArrayList<>();
+
     public SurvivalWorld(BoundCamera camera) {
         super(camera);
         startTime = SystemClock.elapsedRealtime();
+        SurvivalWorld.this.setIgnoreUpdate(false);
         ResourcesManager.gameRunning = true;
-        camera.setBounds(0, 0, GRID_WIDTH * Tile.TILE_EDGE, GRID_HEIGHT * Tile.TILE_EDGE);
+        camera.setBounds(0, 0, SURVIVAL_GRID_WIDTH * Tile.TILE_EDGE, SURVIVAL_GRID_HEIGHT * Tile.TILE_EDGE);
         camera.setBoundsEnabled(true);
         ((SurvivalPlayer) player).setStopEpsilon(PLAYER_STOP_EPSILON);
         physicsWorld.setContactListener(new ContactListener() {
@@ -66,8 +70,7 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
                         ((SurvivalPlayer) player).increaseFootContacts();
                     }
                     if (x1.getBody().getUserData().equals("player") && x2.getBody().getUserData().equals("monster") || x2
-                            .getBody()
-                            .getUserData().equals("player") && x1.getBody().getUserData().equals("monster")) {
+                            .getBody().getUserData().equals("player") && x1.getBody().getUserData().equals("monster")) {
                         SurvivalWorld.this.playerDied();
                     }
                 }
@@ -101,7 +104,7 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     @Override
     public void createPlayer(Camera camera) {
-        player = new SurvivalPlayer(GRID_WIDTH / 2 * Tile.TILE_EDGE, (DIRT_WIDTH + 1) * Tile.TILE_EDGE, physicsWorld);
+        player = new SurvivalPlayer(SURVIVAL_GRID_WIDTH / 2 * Tile.TILE_EDGE, (DIRT_WIDTH + 1) * Tile.TILE_EDGE, physicsWorld);
         player.setPosition(player.getX() + player.getWidth() / 2, player.getY() + player.getHeight() / 2);
         camera.setCenter(player.getX(), player.getY());
         camera.setChaseEntity(player);
@@ -117,13 +120,15 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
                 Monster m;
                 int x = 0, y = DIRT_WIDTH + 1;
                 int tries = 0;
-                while (tries < 100 && (Math.abs(x - player.getX()) / Tile.TILE_EDGE < 2 || Math.abs(y - player.getY()) / Tile
-                        .TILE_EDGE < 2 || grid.indexOfKey(position(x, y)) < 0)) {
-                    x = r.nextInt(GRID_WIDTH);
-                    y = DIRT_WIDTH + 1 + r.nextInt(GRID_HEIGHT - (DIRT_WIDTH + 1));
+                float playerX = player.getX() / Tile.TILE_EDGE;
+                float playerY = player.getY() / Tile.TILE_EDGE;
+                while (tries < 100 && (dist(playerX, playerY, x, y) < 4
+                        || grid.indexOfKey(position(x, y)) < 0 || Math.abs(playerX - x) < 3 || Math.abs(playerY - y) < 3)) {
+                    x = r.nextInt(SURVIVAL_GRID_WIDTH);
+                    y = DIRT_WIDTH + 1 + r.nextInt(SURVIVAL_GRID_HEIGHT - (DIRT_WIDTH + 1));
                     tries++;
                 }
-                if (false/*r.nextBoolean()*/) {
+                if (r.nextBoolean()) {
                     m = new WalkingMonster((x + 1) * Tile.TILE_EDGE, (y + 1) * Tile.TILE_EDGE, physicsWorld, player);
                 } else {
                     m = new FlyingMonster((x + 1) * Tile.TILE_EDGE, (y + 1) * Tile.TILE_EDGE, physicsWorld, player);
@@ -131,16 +136,22 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
                 m.setPosition(m.getX() + m.getWidth() / 2, m.getY() +
                         m.getHeight() / 2);
                 SurvivalWorld.this.attachChild(m);
+                enemies.add(m);
             }
         }));
+    }
+
+    private int dist(float a, float b, int x, int y) {
+        int dis = (int) Math.round(Math.sqrt(Math.pow(a - x, 2) + Math.pow(b - y, 2)));
+        return dis;
     }
 
     @Override
     public void createBackground() {
         setBackground(new Background(Color.WHITE));
-        int separationLayer = BACKGROUND_GRID_HEIGHT / 2;
-        for (int i = 0; i < BACKGROUND_GRID_HEIGHT + 1; i++) {
-            for (int j = 0; j < BACKGROUND_GRID_WIDTH + 1; j++) {
+        int separationLayer = SURVIVAL_BACKGROUND_GRID_HEIGHT / 2;
+        for (int i = 0; i < SURVIVAL_BACKGROUND_GRID_HEIGHT + 1; i++) {
+            for (int j = 0; j < SURVIVAL_BACKGROUND_GRID_WIDTH + 1; j++) {
                 TextureRegion temp = null;
                 if (i < separationLayer) {
                     temp = ResourcesManager.skyBoxBottomRegion;
@@ -163,24 +174,24 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
         int i = 0;
         /* Layers of dirt */
         for (; i < DIRT_WIDTH; i++) {
-            for (int j = 0; j < GRID_WIDTH; j++) {
+            for (int j = 0; j < SURVIVAL_GRID_WIDTH; j++) {
                 createTile(j, i, TileSpritesheet.DIRT_ID);
 
             }
         }
         /* One layer of grass */
-        for (int j = 0; j < GRID_WIDTH; j++) {
+        for (int j = 0; j < SURVIVAL_GRID_WIDTH; j++) {
             createTile(j, i, TileSpritesheet.DIRT_GRASS_ID);
         }
 
 		/* Border */
-        for (i = 0; i < GRID_WIDTH; i++) {
+        for (i = 0; i < SURVIVAL_GRID_WIDTH; i++) {
             createTile(i, -1, TileSpritesheet.DIRT_ID, false);
-            createTile(i, GRID_HEIGHT, TileSpritesheet.DIRT_ID, false);
+            createTile(i, SURVIVAL_GRID_HEIGHT, TileSpritesheet.DIRT_ID, false);
         }
-        for (i = 0; i < GRID_HEIGHT; i++) {
+        for (i = 0; i < SURVIVAL_GRID_HEIGHT; i++) {
             createTile(-1, i, TileSpritesheet.DIRT_ID, false);
-            createTile(GRID_WIDTH, i, TileSpritesheet.DIRT_ID, false);
+            createTile(SURVIVAL_GRID_WIDTH, i, TileSpritesheet.DIRT_ID, false);
         }
     }
 
@@ -193,20 +204,31 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
             int blockY = ((int) pSceneTouchEvent.getY()) / Tile.TILE_EDGE;
             int playerx = ((int) player.getX()) / Tile.TILE_EDGE;
             int playery = ((int) player.getY()) / Tile.TILE_EDGE;
-            if (Math.abs(blockX - playerx) + Math.abs(blockY - playery) > 8) return false;
+            if (Math.abs(blockX - playerx) + Math.abs(blockY - playery) > 5) return false;
+            for (Monster m : enemies) {
+                int enemyx = ((int) m.getX()) / Tile.TILE_EDGE;
+                int enemyy = ((int) m.getY()) / Tile.TILE_EDGE;
+                if (blockX == enemyx && blockY == enemyy) return false;
+            }
             if (blockX != playerx || blockY != playery) {
-                if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) > 0) {
+                if (placeMode == MODE_DELETE_TILES && grid.indexOfKey(position(blockX, blockY)) >= 0) {
                     ResourcesManager.hud.currItem.give();
                     deleteTile(blockX, blockY);
                     return true;
-                } else if (placeMode == MODE_PLACE_TILES && grid.indexOfKey(position(blockX, blockY)) < 0) {
+                } else if (placeMode == MODE_PLACE_TILES) {
                     if (ResourcesManager.hud.currItem.take()) {
-                        createTile(blockX, blockY, ResourcesManager.hud.currItem.mTileType, true, true);
-                        return true;
+                        if (grid.indexOfKey(position(blockX, blockY)) < 0) {
+                            createTile(blockX, blockY, ResourcesManager.hud.currItem.mTileType, true, true);
+                        } else {
+                            deleteTile(blockX, blockY);
+                            createTile(blockX, blockY, ResourcesManager.hud.currItem.mTileType, true, true);
+                        }
                     }
+                    return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -215,21 +237,20 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
 
     @Override
     public void onPopulateQuickAccess(List<InventoryItem> qa) {
-        for (int i = TileSpritesheet.MIN_INDEX; i < new Random().nextInt(TileSpritesheet.MAX_INDEX - 8) + 8; i++) {
-            qa.add(new InventoryItem(i, 5, true));
+        for (int i = TileSpritesheet.MIN_INDEX; i < 1; i++) {
+            qa.add(new InventoryItem(i, 10, true));
         }
         ResourcesManager.gameActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                while (ResourcesManager.hud == null) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                final Text regenerateText = new Text(0, 900, ResourcesManager.caviarDreamsGame, "RG Time: 00", ResourcesManager
-                        .vertexBufferObjectManager);
+                final Text regenerateText = new Text(0, 1000, ResourcesManager.caviarDreamsGame, "RG Time: " + TIME,
+                        ResourcesManager
+                                .vertexBufferObjectManager);
                 regenerateText.setColor(Color.BLACK);
                 regenerateText.setScale(1.5f);
                 regenerateText.registerUpdateHandler(new TimerHandler(1f, true, new ITimerCallback() {
@@ -274,8 +295,8 @@ public class SurvivalWorld extends World implements world.constants.CreativeCons
                 int minutes = (int) ((milliseconds / (1000 * 60)) % 60);
                 int hours = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
                 String time = "";
-                if (hours > 0) time += hours + " hours";
-                if (minutes > 0) time += minutes + " minutes";
+                if (hours > 0) time += hours + " hours, ";
+                if (minutes > 0) time += minutes + " minutes, ";
                 if (seconds > 0) time += seconds + " seconds!";
                 builder.setTitle("Yay you survived for " + time).setCancelable(false).setPositiveButton("Go Back!",
                         dialogClickListener);
